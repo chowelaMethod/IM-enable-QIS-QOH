@@ -1,0 +1,2554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Method CRM — Sales Orders</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  background: #0F1E38;
+}
+
+/* ── Layout shell ─────────────────────────────────────────────────── */
+.app {
+  display: grid;
+  grid-template-rows: 52px 1fr;
+  grid-template-columns: 224px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Top nav ──────────────────────────────────────────────────────── */
+.topnav {
+  grid-column: 1 / -1;
+  background: #0F1E38;
+  display: flex;
+  align-items: center;
+  padding: 0 16px 0 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  position: relative;
+  z-index: 50;
+}
+.topnav-logo {
+  width: 224px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.topnav-logo svg { color: white; }
+.method-wordmark {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.5px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+}
+.hamburger {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: rgba(255,255,255,.7);
+  margin-left: auto;
+}
+.topnav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.topnav-icon {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: rgba(255,255,255,.75);
+  transition: background .12s;
+}
+.topnav-icon:hover { background: rgba(255,255,255,.08); }
+.topnav-icon svg { width: 20px; height: 20px; }
+.avatar-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid rgba(255,255,255,.2);
+  flex-shrink: 0;
+  background: #7B9FC4;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 700; font-size: 13px;
+}
+.avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ── Left sidebar ─────────────────────────────────────────────────── */
+.sidebar {
+  background: #0F1E38;
+  border-right: 1px solid rgba(255,255,255,.06);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  cursor: pointer;
+  color: rgba(255,255,255,.65);
+  font-size: 13.5px;
+  border-radius: 0;
+  transition: background .1s, color .1s;
+  user-select: none;
+  position: relative;
+}
+.nav-item:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.9); }
+.nav-item.active {
+  background: #1E4B8E;
+  color: white;
+  font-weight: 500;
+}
+.nav-item .icon {
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  opacity: .85;
+}
+.nav-item.active .icon { opacity: 1; }
+.nav-item .caret {
+  margin-left: auto;
+  font-size: 11px;
+  color: rgba(255,255,255,.4);
+}
+.nav-divider {
+  height: 1px;
+  background: rgba(255,255,255,.08);
+  margin: 8px 16px;
+}
+.nav-spacer { flex: 1; min-height: 8px; }
+
+/* ── Main content ─────────────────────────────────────────────────── */
+.main {
+  background: #F4F6F9;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.main-header {
+  background: white;
+  padding: 16px 24px 0;
+  border-bottom: 1px solid #E5E7EB;
+  flex-shrink: 0;
+}
+.main-toprow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.back-link {
+  font-size: 13px;
+  color: #2563EB;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+}
+.back-link:hover { text-decoration: underline; }
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0F1E38;
+  margin-bottom: 14px;
+}
+.header-actions { display: flex; gap: 8px; align-items: center; }
+.btn {
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 0;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-primary { background: #2563EB; color: white; }
+.btn-primary:hover { background: #1D4ED8; }
+.btn-secondary { background: white; border: 1px solid #D1D5DB; color: #374151; }
+.btn-secondary:hover { background: #F9FAFB; }
+
+.tabs {
+  display: flex;
+  gap: 0;
+}
+.tab {
+  padding: 10px 16px;
+  font-size: 13.5px;
+  cursor: pointer;
+  color: #6B7280;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  font-weight: 400;
+}
+.tab.active {
+  color: #2563EB;
+  border-bottom-color: #2563EB;
+  font-weight: 600;
+}
+
+/* ── Toolbar ──────────────────────────────────────────────────────── */
+.toolbar {
+  background: white;
+  padding: 10px 24px;
+  border-bottom: 1px solid #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.toolbar-left { display: flex; align-items: center; gap: 8px; }
+.my-items-dropdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  cursor: pointer;
+  padding: 5px 2px;
+}
+.my-items-dropdown .caret { color: #6B7280; font-size: 12px; }
+.toolbar-right { display: flex; align-items: center; gap: 8px; }
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-size: 13px;
+  color: #9CA3AF;
+  background: white;
+  width: 200px;
+}
+.search-box svg { color: #9CA3AF; flex-shrink: 0; }
+
+/* ── Table ────────────────────────────────────────────────────────── */
+.table-wrap {
+  flex: 1;
+  overflow: auto;
+  background: white;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.data-table thead th {
+  text-align: left;
+  padding: 11px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #374151;
+  background: white;
+  border-bottom: 1px solid #E5E7EB;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.data-table tbody td {
+  padding: 13px 16px;
+  color: #111827;
+  border-bottom: 1px solid #F3F4F6;
+  vertical-align: middle;
+  font-size: 13.5px;
+}
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover td { background: #F9FAFB; }
+
+/* ── Pagination ───────────────────────────────────────────────────── */
+.table-footer {
+  background: white;
+  padding: 11px 24px;
+  border-top: 1px solid #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  font-size: 13px;
+  color: #6B7280;
+  flex-shrink: 0;
+}
+.pag-count { color: #374151; }
+.pag-count strong { color: #2563EB; text-decoration: underline; cursor: pointer; }
+.pag-btns { display: flex; gap: 2px; }
+.pag-btn {
+  width: 32px; height: 32px;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #374151; font-size: 13px;
+}
+.pag-btn:disabled { opacity: .4; cursor: default; }
+.pag-btn:not(:disabled):hover { background: #F3F4F6; }
+.show-select {
+  display: flex; align-items: center; gap: 6px;
+}
+.show-select select {
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  padding: 5px 28px 5px 10px;
+  font-size: 13px;
+  color: #374151;
+  appearance: none;
+  background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 8px center;
+  cursor: pointer;
+}
+
+/* ── User dropdown ────────────────────────────────────────────────── */
+.overlay-dim {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,30,56,.35);
+  z-index: 100;
+}
+.overlay-dim[hidden] { display: none; }
+.user-dropdown {
+  position: fixed;
+  top: 56px;
+  right: 16px;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(15,30,56,.18), 0 2px 8px rgba(15,30,56,.08);
+  width: 240px;
+  z-index: 101;
+  overflow: hidden;
+}
+.user-dropdown[hidden] { display: none; }
+.user-info {
+  padding: 16px 18px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #F3F4F6;
+}
+.user-avatar-lg {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: #2563EB;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.user-name { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 1px; }
+.user-org { font-size: 12px; color: #6B7280; }
+.dropdown-items { padding: 6px 0; }
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  cursor: pointer;
+  color: #374151;
+  font-size: 13.5px;
+  transition: background .1s;
+}
+.dropdown-item:hover { background: #F9FAFB; }
+.dropdown-item .di-icon {
+  width: 18px; height: 18px;
+  color: #6B7280;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── SVG icon helper ──────────────────────────────────────────────── */
+.icon svg { width: 18px; height: 18px; }
+
+/* ── Add Items page (post-enable landing) ─────────────────────────── */
+.add-items-page {
+  position: fixed;
+  inset: 0;
+  display: none;
+  grid-template-rows: 52px 1fr;
+  grid-template-columns: 176px 1fr;
+  z-index: 800;
+  background: white;
+}
+.add-items-page.visible { display: grid; }
+.ai-topnav {
+  grid-column: 1 / -1;
+  background: #0F1E38;
+  display: flex;
+  align-items: center;
+  padding: 0 20px 0 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.ai-topnav-logo {
+  width: 176px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 18px;
+  flex-shrink: 0;
+}
+.ai-topnav-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: white;
+  flex: 1;
+}
+.ai-topnav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.ai-topnav-sep {
+  width: 1px;
+  height: 22px;
+  background: rgba(255,255,255,.18);
+  margin: 0 6px;
+}
+.ai-sidebar {
+  background: #0F1E38;
+  border-right: 1px solid rgba(255,255,255,.07);
+  overflow-y: auto;
+  padding: 6px 0;
+}
+.ai-sidebar::-webkit-scrollbar { width: 3px; }
+.ai-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); }
+.ai-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: rgba(255,255,255,.62);
+  cursor: pointer;
+}
+.ai-nav:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.9); }
+.ai-nav.on { background: #1E4B8E; color: white; font-weight: 500; }
+.ai-nav svg { width: 17px; height: 17px; flex-shrink: 0; opacity: .82; }
+.ai-nav.on svg { opacity: 1; }
+.ai-main {
+  background: white;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.ai-subheader {
+  padding: 10px 24px 0;
+  border-bottom: 1px solid #E5E7EB;
+  flex-shrink: 0;
+}
+.ai-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #2563EB;
+  cursor: pointer;
+  margin-bottom: 8px;
+  text-decoration: none;
+}
+.ai-back:hover { text-decoration: underline; }
+.ai-tabs {
+  display: flex;
+  gap: 0;
+}
+.ai-tab {
+  padding: 8px 16px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #6B7280;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ai-tab.on { color: #2563EB; border-bottom-color: #2563EB; font-weight: 600; }
+.ai-toolbar {
+  padding: 9px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #E5E7EB;
+  flex-shrink: 0;
+}
+.ai-toolbar-left { display: flex; align-items: center; gap: 8px; }
+.ai-myitems {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0F1B31;
+  cursor: pointer;
+}
+.ai-toolbar-right { display: flex; align-items: center; gap: 6px; }
+.ai-search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: #9CA3AF;
+  background: white;
+  width: 180px;
+}
+.ai-icon-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6B7280;
+}
+.ai-icon-btn:hover { background: #F9FAFB; }
+.ai-tbl-wrap { flex: 1; overflow-y: auto; }
+.ai-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.ai-tbl thead th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  background: white;
+  border-bottom: 1px solid #E5E7EB;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.ai-tbl thead th.num { text-align: right; }
+.ai-tbl tbody td {
+  padding: 11px 14px;
+  border-bottom: 1px solid #F3F4F6;
+  color: #0F1B31;
+  vertical-align: middle;
+}
+.ai-tbl tbody td.num { text-align: right; color: #6B7280; }
+.ai-tbl tbody tr:hover td { background: #FAFAFA; }
+.ai-empty-row td { height: 44px; }
+.ai-foot {
+  padding: 10px 24px;
+  border-top: 1px solid #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  font-size: 13px;
+  color: #6B7280;
+  flex-shrink: 0;
+  background: white;
+}
+.ai-perpage {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ai-perpage select {
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  padding: 4px 24px 4px 8px;
+  font-size: 13px;
+  color: #374151;
+  appearance: none;
+  background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 6px center;
+  cursor: pointer;
+}
+.ai-pag-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #D1D5DB;
+  border-radius: 5px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ai-pag-btn:disabled { opacity: .4; cursor: default; }
+
+/* ── Enable IM stepper modal ──────────────────────────────────────── */
+.im-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,30,56,.38);
+  z-index: 700;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.im-modal-overlay.visible { display: flex; }
+.im-modal {
+  background: white;
+  border-radius: 14px;
+  width: 620px;
+  max-width: 94vw;
+  box-shadow: 0 24px 80px rgba(0,0,0,.22);
+  overflow: hidden;
+}
+.im-modal-header {
+  padding: 22px 24px 18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid #F3F4F6;
+}
+.im-modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0F1B31;
+  margin-bottom: 2px;
+}
+.im-modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #9CA3AF;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  margin-left: 12px;
+  flex-shrink: 0;
+}
+.im-modal-close:hover { color: #374151; }
+/* Stepper dots */
+.im-stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 24px 0;
+}
+.im-step-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.im-step-dot.done { background: #D1FAE5; color: #065F46; }
+.im-step-dot.active { background: #2563EB; color: white; }
+.im-step-dot.pending { background: #F3F4F6; color: #9CA3AF; }
+.im-step-line {
+  flex: 1;
+  height: 2px;
+  background: #E5E7EB;
+  border-radius: 1px;
+}
+.im-step-line.done { background: #6EE7B7; }
+.im-step-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  margin-top: 4px;
+  text-align: center;
+  width: 28px;
+  white-space: nowrap;
+}
+.im-stepper-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 14px 24px 0;
+}
+.im-stepper-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.im-stepper-col .im-step-label { color: #9CA3AF; }
+.im-stepper-col.active .im-step-label { color: #2563EB; }
+.im-stepper-col.done .im-step-label { color: #065F46; }
+.im-stepper-spacer { flex: 1; padding-top: 14px; }
+/* Modal body */
+.im-modal-body {
+  padding: 20px 24px;
+  font-size: 13.5px;
+  color: #374151;
+  line-height: 1.6;
+  max-height: 58vh;
+  overflow-y: auto;
+}
+.im-modal-body p { margin-bottom: 12px; }
+.im-modal-body h3 { font-size: 13.5px; font-weight: 700; color: #0F1B31; margin-bottom: 8px; }
+.im-modal-body ul { padding-left: 18px; margin-bottom: 14px; }
+.im-modal-body ul li { margin-bottom: 6px; }
+.im-modal-body a { color: #2563EB; text-decoration: underline; cursor: pointer; }
+.im-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  margin-top: 4px;
+}
+.im-checkbox-row input[type="checkbox"] { accent-color: #2563EB; width: 16px; height: 16px; flex-shrink: 0; }
+.im-checkbox-row label { font-size: 13px; font-weight: 600; color: #111827; cursor: pointer; }
+/* QB import step */
+.im-qb-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  border-radius: 8px;
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #15803D;
+  margin-bottom: 16px;
+}
+.im-qb-logo svg { width: 18px; height: 18px; }
+.im-import-option {
+  border: 1.5px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  background: white;
+}
+.im-import-option:hover { border-color: #93C5FD; }
+.im-import-option.selected { border-color: #2563EB; background: white; }
+.im-import-option input[type="radio"] { display: none; }
+.im-radio-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #D1D5DB;
+  flex-shrink: 0;
+  background: white;
+  transition: background .15s, border-color .15s;
+  position: relative;
+  margin-top: 1px;
+}
+.im-import-option.selected .im-radio-circle {
+  background: #2563EB;
+  border-color: #2563EB;
+}
+.im-import-option.selected .im-radio-circle::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: white;
+}
+.im-import-option-body { flex: 1; min-width: 0; }
+.im-import-option-body strong { display: block; font-size: 13.5px; font-weight: 700; color: #0F1B31; margin-bottom: 3px; }
+.im-import-option-body span { font-size: 12.5px; color: #6B7280; line-height: 1.5; }
+.im-field-map {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+.im-field-map-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #374151;
+  margin-bottom: 6px;
+}
+.im-field-map-row:last-child { margin-bottom: 0; }
+.im-field-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 11px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.fp-qb { background: #DCFCE7; color: #166534; }
+.fp-method { background: #DBEAFE; color: #1E40AF; }
+.im-field-arrow { color: #9CA3AF; font-size: 13px; }
+/* Footer */
+.im-modal-footer {
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #F3F4F6;
+  background: #FAFAFA;
+}
+.im-footer-left { display: flex; gap: 8px; }
+.im-btn {
+  padding: 8px 20px;
+  border-radius: 24px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  transition: opacity .1s;
+}
+.im-btn:disabled { opacity: .45; cursor: default; }
+.im-btn-cancel { background: white; border: 1.5px solid #2563EB; color: #2563EB; }
+.im-btn-cancel:hover { background: #EFF6FF; }
+.im-btn-back { background: white; border: 1.5px solid #D1D5DB; color: #374151; }
+.im-btn-back:hover { background: #F3F4F6; }
+.im-btn-next { background: #2563EB; color: white; }
+.im-btn-next:not(:disabled):hover { background: #1D4ED8; }
+.im-btn-enable { background: #2563EB; color: white; }
+.im-btn-enable:not(:disabled):hover { background: #1D4ED8; }
+/* Step panels */
+.im-step-panel { display: none; }
+.im-step-panel.active { display: block; }
+@keyframes shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+/* ── Account Settings page overlay ───────────────────────────────── */
+.acct-settings-page {
+  position: fixed;
+  inset: 0;
+  display: none;
+  grid-template-rows: 52px 1fr;
+  grid-template-columns: 224px 1fr;
+  z-index: 200;
+  background: #0F1E38;
+}
+.acct-settings-page.visible { display: grid; }
+
+.as-topnav {
+  grid-column: 1 / -1;
+  background: #0F1E38;
+  display: flex;
+  align-items: center;
+  padding: 0 16px 0 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.as-topnav-logo {
+  width: 224px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.as-sidebar {
+  background: #0F1E38;
+  border-right: 1px solid rgba(255,255,255,.06);
+  overflow-y: auto;
+  padding: 8px 0;
+}
+.as-sidebar::-webkit-scrollbar { width: 4px; }
+.as-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
+
+.as-main {
+  background: #F4F6F9;
+  overflow-y: auto;
+}
+.as-main-inner {
+  background: white;
+  min-height: 100%;
+  padding: 28px 40px 40px;
+}
+.as-back {
+  font-size: 13px;
+  color: #2563EB;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 24px;
+  text-decoration: none;
+}
+.as-back:hover { text-decoration: underline; }
+.as-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.as-gear {
+  width: 36px; height: 36px;
+  background: #EFF6FF;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #2563EB;
+  flex-shrink: 0;
+}
+.as-heading h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0F1E38;
+}
+.settings-list { border-top: 1px solid #E5E7EB; }
+.settings-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 18px 0;
+  border-bottom: 1px solid #E5E7EB;
+  gap: 32px;
+}
+.settings-row-left { flex: 1; }
+.settings-row-name {
+  color: #2563EB;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.settings-row-desc {
+  color: #6B7280;
+  font-size: 13.5px;
+  line-height: 1.55;
+  max-width: 540px;
+}
+.settings-row-link {
+  color: #2563EB;
+  font-size: 13.5px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-top: 2px;
+  text-decoration: none;
+}
+.settings-row-link:hover { text-decoration: underline; }
+
+/* ── Display Settings page ────────────────────────────────────────── */
+.display-settings-page {
+  position: fixed;
+  inset: 0;
+  display: none;
+  grid-template-rows: 52px 1fr;
+  grid-template-columns: 224px 1fr;
+  z-index: 300;
+  background: #0F1E38;
+}
+.display-settings-page.visible { display: grid; }
+
+.ds-nav-title {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: white;
+  padding-left: 8px;
+  cursor: pointer;
+}
+.ds-nav-title:hover { opacity: .85; }
+
+.ds-main {
+  background: white;
+  overflow-y: auto;
+}
+.ds-section {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 32px;
+  padding: 28px 32px;
+  border-bottom: 1px solid #E5E7EB;
+}
+.ds-section-label h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 6px;
+}
+.ds-section-label p {
+  font-size: 12.5px;
+  color: #6B7280;
+  line-height: 1.55;
+}
+.ds-card {
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 20px 24px;
+}
+.ds-card-row {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 20px;
+}
+.ds-card-row:last-of-type { margin-bottom: 0; }
+.ds-field-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #111827;
+  padding-top: 2px;
+  line-height: 1.4;
+}
+.radio-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13.5px;
+  color: #374151;
+  cursor: pointer;
+}
+.radio-opt:last-child { margin-bottom: 0; }
+.radio-opt input[type="radio"] { accent-color: #2563EB; width: 15px; height: 15px; flex-shrink: 0; }
+.radio-opt em { font-style: italic; color: #6B7280; }
+.ds-save-row { margin-top: 16px; padding-top: 14px; border-top: 1px solid #F3F4F6; }
+.ds-save-btn {
+  background: #BFDBFE;
+  color: #1E40AF;
+  border: none;
+  border-radius: 20px;
+  padding: 7px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ds-save-btn:hover { background: #93C5FD; }
+.ds-save-btn-solid {
+  background: #2563EB;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ds-save-btn-solid:hover { background: #1D4ED8; }
+.ds-card-heading {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 10px;
+}
+.ds-card-desc {
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.ds-help-section { padding: 28px 32px; }
+.ds-help-section h3 {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+}
+.ds-help-link {
+  display: block;
+  color: #2563EB;
+  font-size: 13.5px;
+  cursor: pointer;
+  text-decoration: none;
+  margin-bottom: 6px;
+}
+.ds-help-link:hover { text-decoration: underline; }
+
+/* ── Enable IM Modal ──────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.32);
+  z-index: 700;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.visible { display: flex; }
+.modal-box {
+  background: white;
+  border-radius: 14px;
+  max-width: 620px;
+  width: 92%;
+  box-shadow: 0 24px 80px rgba(0,0,0,.22), 0 4px 16px rgba(0,0,0,.1);
+  overflow: hidden;
+}
+.modal-header {
+  padding: 24px 28px 18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.3;
+}
+.modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6B7280;
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.modal-close:hover { background: #F3F4F6; color: #111827; }
+.modal-divider { height: 1px; background: #E5E7EB; }
+.modal-body {
+  padding: 24px 28px 20px;
+}
+.modal-body p {
+  font-size: 14.5px;
+  color: #374151;
+  line-height: 1.65;
+  margin-bottom: 16px;
+}
+.modal-body h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+  margin-top: 4px;
+}
+.modal-body ul {
+  padding-left: 20px;
+  margin-bottom: 22px;
+}
+.modal-body ul li {
+  font-size: 14.5px;
+  color: #374151;
+  line-height: 1.65;
+  margin-bottom: 12px;
+}
+.modal-body ul li:last-child { margin-bottom: 0; }
+.modal-body a { color: #2563EB; cursor: pointer; text-decoration: none; }
+.modal-body a:hover { text-decoration: underline; }
+.modal-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+.modal-checkbox-row input[type="checkbox"] {
+  width: 18px; height: 18px;
+  border: 1.5px solid #D1D5DB;
+  border-radius: 4px;
+  accent-color: #2563EB;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.modal-checkbox-row label {
+  font-size: 14.5px;
+  color: #374151;
+  cursor: pointer;
+}
+.modal-footer {
+  padding: 14px 28px;
+  background: #F9FAFB;
+  border-top: 1px solid #E5E7EB;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.modal-btn-cancel {
+  padding: 9px 24px;
+  border: 1.5px solid #2563EB;
+  border-radius: 24px;
+  background: white;
+  color: #2563EB;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.modal-btn-cancel:hover { background: #EFF6FF; }
+.modal-btn-enable {
+  padding: 9px 24px;
+  border: none;
+  border-radius: 24px;
+  background: #5B8DB8;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.modal-btn-enable:hover { background: #4A7BA0; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Top nav -->
+  <nav class="topnav">
+    <div class="topnav-logo">
+      <span class="method-wordmark">method</span>
+      <span class="hamburger">
+        <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+          <path d="M0 1h18M0 7h18M0 13h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;color:white;font-size:15px;font-weight:600;margin-left:4px;cursor:pointer;user-select:none;">
+      Items
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="m4 6 4 4 4-4" stroke="rgba(255,255,255,.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="topnav-right">
+      <!-- Search -->
+      <div class="topnav-icon" title="Search">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7.5" stroke="currentColor" stroke-width="1.8"/><path d="m17 17 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <!-- Create -->
+      <div class="topnav-icon" title="Create new">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v10M7 12h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <!-- Help -->
+      <div class="topnav-icon" title="Help">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.8"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.95.5c0 1.5-2.45 2-2.45 3.5M12 17.5v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <!-- Avatar -->
+      <div class="avatar-btn" onclick="toggleDropdown()" title="Barbara">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="8" r="4" stroke="white" stroke-width="1.8"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/></svg></span>Home</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Purchase Orders</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M2 10h20M6 15h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Bills</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Schedule</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Work Orders</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.7"/><path d="M8 8h8M8 12h5M8 16h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Estimates</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Sales Orders</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>Vendors</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16v3l-8 5-8-5V4zM4 7v13h16V7" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>Send Email</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M2 20c0-4 3.1-7 7-7s7 3 7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 3.2a4 4 0 0 1 0 7.6M22 20c0-3.5-2.5-6.3-6-7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Customers &amp; Leads</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M8 14h4M8 17h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Activities</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5z" stroke="currentColor" stroke-width="1.7"/><path d="M8 9h8M8 13h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Invoices</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M2 10h20" stroke="currentColor" stroke-width="1.7"/><path d="M6 15h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Payments</div>
+    <div class="nav-item active"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h10l6 6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 4v6h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 13h8M8 17h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Items</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 7V5a2 2 0 0 0-4 0v2M8 7V5a2 2 0 0 0-4 0v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Jobs</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.7"/><path d="M8 8h5M8 12h5M8 16h3M16 8v8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Sales Receipts</div>
+    <div class="nav-spacer"></div>
+    <div class="nav-divider"></div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M16.9 16.9l2.1 2.1M4.9 19.1l2.1-2.1M16.9 7.1l2.1-2.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>App Marketplace</div>
+  </aside>
+
+  <!-- Main content: Items screen (image 1) -->
+  <main class="main" style="overflow-y:auto;background:#F0F2F5;">
+
+    <!-- Sub-header row -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px 10px;">
+      <a class="back-link" style="font-size:13px;color:#2563EB;display:inline-flex;align-items:center;gap:4px;cursor:pointer;text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Back
+      </a>
+      <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#2563EB;cursor:pointer;">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v6M5 8h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        New &nbsp;Item
+      </div>
+    </div>
+
+    <!-- Filter + toolbar row -->
+    <div style="display:flex;align-items:center;gap:8px;padding:0 20px 12px;">
+      <div style="display:flex;align-items:center;gap:6px;border:1px solid #D1D5DB;border-radius:6px;background:white;padding:7px 12px;font-size:13px;color:#374151;cursor:pointer;min-width:160px;">
+        Active Items
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="margin-left:auto;"><path d="m4 6 4 4 4-4" stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
+        <button style="width:34px;height:34px;border:1px solid #D1D5DB;border-radius:6px;background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6B7280;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/></svg>
+        </button>
+        <button style="width:34px;height:34px;border:1px solid #D1D5DB;border-radius:6px;background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6B7280;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
+        <button style="width:34px;height:34px;border:1px solid #D1D5DB;border-radius:6px;background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6B7280;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 15V3M7 10l5 5 5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 21h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
+        <div style="display:flex;align-items:center;border:1px solid #D1D5DB;border-radius:6px;background:white;overflow:hidden;">
+          <div style="display:flex;align-items:center;gap:6px;padding:7px 12px;font-size:13px;color:#9CA3AF;min-width:200px;">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9CA3AF" stroke-width="1.4"/><path d="m11 11 3 3" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>Search
+          </div>
+          <div style="padding:7px 12px;font-size:13px;color:#2563EB;border-left:1px solid #D1D5DB;cursor:pointer;white-space:nowrap;">Advanced ▼</div>
+          <button style="background:#2563EB;border:none;padding:7px 14px;color:white;cursor:pointer;display:flex;align-items:center;">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="white" stroke-width="1.5"/><path d="m11 11 3 3" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Items table -->
+    <div style="margin:0 20px;background:white;border-radius:8px;border:1px solid #E5E7EB;overflow:hidden;">
+      <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
+        <thead>
+          <tr style="border-bottom:1px solid #E5E7EB;">
+            <th style="text-align:left;padding:10px 16px;font-weight:600;color:#2563EB;white-space:nowrap;">Item Name</th>
+            <th style="text-align:left;padding:10px 16px;font-weight:600;color:#2563EB;">Description</th>
+            <th style="text-align:left;padding:10px 16px;font-weight:600;color:#2563EB;white-space:nowrap;">Type</th>
+            <th style="text-align:right;padding:10px 16px;font-weight:600;color:#2563EB;white-space:nowrap;">On Hand</th>
+            <th style="text-align:right;padding:10px 16px;font-weight:600;color:#2563EB;white-space:nowrap;">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #F3F4F6;"><td style="padding:10px 16px;color:#111827;">Air Conditioner Repair (Minor)</td><td style="padding:10px 16px;color:#374151;">Electrical or component-level repair</td><td style="padding:10px 16px;color:#374151;">Service</td><td style="padding:10px 16px;text-align:right;color:#374151;"></td><td style="padding:10px 16px;text-align:right;color:#374151;">275.00</td></tr>
+          <tr style="border-bottom:1px solid #F3F4F6;"><td style="padding:10px 16px;color:#111827;">Air Filter Replacement</td><td style="padding:10px 16px;color:#374151;">1" Pleated Filter Make: Filtrete Size: 16x25x1 / 20x25x1</td><td style="padding:10px 16px;color:#374151;">NonInventory</td><td style="padding:10px 16px;text-align:right;color:#374151;"></td><td style="padding:10px 16px;text-align:right;color:#374151;">45.00</td></tr>
+          <tr style="border-bottom:1px solid #F3F4F6;"><td style="padding:10px 16px;color:#111827;">Brick</td><td style="padding:10px 16px;color:#374151;"></td><td style="padding:10px 16px;color:#374151;">NonInventory</td><td style="padding:10px 16px;text-align:right;color:#374151;"></td><td style="padding:10px 16px;text-align:right;color:#374151;">99.95</td></tr>
+          <tr style="border-bottom:1px solid #F3F4F6;"><td style="padding:10px 16px;color:#111827;">Capacitors</td><td style="padding:10px 16px;color:#374151;font-size:12.5px;">Make: Titan Pro / Packard Model: Titan Pro TRCFD455<br>Used When: Unit hums but won't start, intermittent shutdowns</td><td style="padding:10px 16px;color:#374151;">NonInventory</td><td style="padding:10px 16px;text-align:right;color:#374151;"></td><td style="padding:10px 16px;text-align:right;color:#374151;">85.00</td></tr>
+          <tr style="border-bottom:1px solid #F3F4F6;"><td style="padding:10px 16px;color:#111827;">Condensate Drain Line / Pump Repair</td><td style="padding:10px 16px;color:#374151;">Clear blockage or repair leaks</td><td style="padding:10px 16px;color:#374151;">Service</td><td style="padding:10px 16px;text-align:right;color:#374151;"></td><td style="padding:10px 16px;text-align:right;color:#374151;">160.00</td></tr>
+          <tr style="border-bottom:1px solid #F3F4F6;"><td style="padding:10px 16px;color:#111827;">Condensate Pump</td><td style="padding:10px 16px;color:#374151;">Make: Little Giant Model: VCMA-15UL</td><td style="padding:10px 16px;color:#374151;">NonInventory</td><td style="padding:10px 16px;text-align:right;color:#374151;"></td><td style="padding:10px 16px;text-align:right;color:#374151;">180.00</td></tr>
+          <tr style="border-bottom:1px solid #F3F4F6;"><td style="padding:10px 16px;color:#111827;">Connectors</td><td style="padding:10px 16px;color:#374151;">Board connectors curved / straight</td><td style="padding:10px 16px;color:#374151;">Inventory</td><td style="padding:10px 16px;text-align:right;color:#374151;">675</td><td style="padding:10px 16px;text-align:right;color:#374151;">2.00</td></tr>
+          <tr style="border-bottom:1px solid #F3F4F6;"><td style="padding:10px 16px;color:#111827;">Dasher Boards - Aluminum</td><td style="padding:10px 16px;color:#374151;">Boards for college and municipal competitive hockey</td><td style="padding:10px 16px;color:#374151;">Inventory</td><td style="padding:10px 16px;text-align:right;color:#374151;">275</td><td style="padding:10px 16px;text-align:right;color:#374151;">145.00</td></tr>
+          <tr style="border-bottom:1px solid #F3F4F6;"><td style="padding:10px 16px;color:#111827;">Dasher Boards - Clear Aluminum</td><td style="padding:10px 16px;color:#374151;">Boards for private and community rink applications</td><td style="padding:10px 16px;color:#374151;">Inventory</td><td style="padding:10px 16px;text-align:right;color:#374151;">275</td><td style="padding:10px 16px;text-align:right;color:#374151;">195.00</td></tr>
+          <tr><td style="padding:10px 16px;color:#111827;">Ductwork Repair (Per Section)</td><td style="padding:10px 16px;color:#374151;">Seal or replace damaged duct sections</td><td style="padding:10px 16px;color:#374151;">Service</td><td style="padding:10px 16px;text-align:right;color:#374151;"></td><td style="padding:10px 16px;text-align:right;color:#374151;">150.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;">
+      <button style="width:30px;height:30px;border-radius:4px;border:none;background:#2563EB;color:white;font-size:13px;font-weight:600;cursor:pointer;">1</button>
+      <button style="width:30px;height:30px;border-radius:4px;border:1px solid #D1D5DB;background:white;color:#374151;font-size:13px;cursor:pointer;">2</button>
+      <button style="width:30px;height:30px;border-radius:4px;border:1px solid #D1D5DB;background:white;color:#374151;font-size:13px;cursor:pointer;">3</button>
+      <button style="width:30px;height:30px;border-radius:4px;border:1px solid #D1D5DB;background:white;color:#374151;font-size:13px;cursor:pointer;">4</button>
+      <button style="width:30px;height:30px;border-radius:4px;border:1px solid #D1D5DB;background:white;color:#374151;font-size:13px;cursor:pointer;">›</button>
+      <span style="font-size:13px;color:#374151;margin-left:4px;">1 - 10 of 32 records.</span>
+      <span style="font-size:13px;color:#374151;margin-left:auto;">Page</span>
+      <input type="text" value="1" style="width:40px;padding:4px 8px;border:1px solid #D1D5DB;border-radius:4px;font-size:13px;text-align:center;">
+    </div>
+
+  </main>
+</div>
+
+<!-- Overlay dim -->
+<div class="overlay-dim" id="overlayDim" onclick="toggleDropdown()"></div>
+
+<!-- User dropdown -->
+<div class="user-dropdown" id="userDropdown">
+  <div class="user-info">
+    <div class="user-avatar-lg">B</div>
+    <div>
+      <div class="user-name">Barbara</div>
+      <div class="user-org">m18MethodDesign</div>
+    </div>
+  </div>
+  <div class="dropdown-items">
+    <div class="dropdown-item">
+      <span class="di-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </span>
+      User Profile
+    </div>
+    <div class="dropdown-item" onclick="goToSettings()">
+      <span class="di-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.77 1.77M17.33 17.33l1.77 1.77M4.9 19.1l1.77-1.77M17.33 6.67l1.77-1.77" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </span>
+      Account Settings
+    </div>
+    <div class="dropdown-item">
+      <span class="di-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6.5 9.5a3 3 0 0 0 4.243 0l3-3a3 3 0 1 0-4.243-4.243l-1.5 1.5M9.5 6.5a3 3 0 0 0-4.243 0l-3 3a3 3 0 1 0 4.243 4.243l1.5-1.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      Integrations
+    </div>
+    <div class="dropdown-item">
+      <span class="di-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 16l4-4-4-4M7 8l-4 4 4 4M14 4l-4 16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      Switch Account
+    </div>
+    <div class="dropdown-item" style="color:#DC2626">
+      <span class="di-icon" style="color:#DC2626">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      Sign Out
+    </div>
+  </div>
+</div>
+
+<script>
+var dropOpen = true;
+
+function toggleDropdown() {
+  dropOpen = !dropOpen;
+  document.getElementById('userDropdown').hidden = !dropOpen;
+  document.getElementById('overlayDim').hidden = !dropOpen;
+}
+
+function goToSettings() {
+  dropOpen = false;
+  document.getElementById('userDropdown').hidden = true;
+  document.getElementById('overlayDim').hidden = true;
+  document.getElementById('acctSettingsPage').classList.add('visible');
+}
+
+function backToItems() {
+  document.getElementById('acctSettingsPage').classList.remove('visible');
+}
+
+function goToDisplaySettings() {
+  document.getElementById('acctSettingsPage').classList.remove('visible');
+  document.getElementById('displaySettingsPage').classList.add('visible');
+}
+
+function backToAccountSettings() {
+  document.getElementById('displaySettingsPage').classList.remove('visible');
+  document.getElementById('acctSettingsPage').classList.add('visible');
+}
+
+function showEnableIMModal() {
+  document.getElementById('enableIMOverlay').classList.add('visible');
+}
+
+function closeEnableIMModal(e) {
+  if (!e || e.target === document.getElementById('enableIMOverlay')) {
+    document.getElementById('enableIMOverlay').classList.remove('visible');
+    document.querySelectorAll('input[name="im-toggle"]').forEach(function(r){ r.checked = false; });
+  }
+}
+
+var syncComplete = false;
+var syncTimer = null;
+var toastPending = false;
+
+function startSyncTimer() {
+  syncComplete = false;
+  toastPending = false;
+  if (syncTimer) clearTimeout(syncTimer);
+  syncTimer = setTimeout(function() {
+    syncComplete = true;
+    updateDoneBtn();
+    if (toastPending) { showSyncToast(); toastPending = false; }
+  }, 8000);
+}
+
+function updateDoneBtn() {
+  var checked = document.getElementById('notifyWhenDone').checked;
+  var btn = document.getElementById('imDoneBtn');
+  btn.textContent = 'Done';
+  btn.style.background = '#2563EB';
+  var enabled = checked || syncComplete;
+  btn.disabled = !enabled;
+  btn.style.opacity = enabled ? '1' : '0.45';
+  btn.style.cursor = enabled ? 'pointer' : 'not-allowed';
+}
+function showSyncToast() {
+  var t = document.getElementById('syncToast');
+  t.classList.add('visible');
+  setTimeout(function() { t.classList.remove('visible'); }, 6000);
+}
+function confirmEnableIM() {
+  document.getElementById('enableIMOverlay').classList.remove('visible');
+}
+
+document.getElementById('userDropdown').hidden = true;
+document.getElementById('overlayDim').hidden = true;
+</script>
+
+<!-- Account Settings page -->
+<div class="acct-settings-page" id="acctSettingsPage">
+
+  <!-- Topnav -->
+  <nav class="as-topnav">
+    <div class="as-topnav-logo">
+      <span class="method-wordmark">method</span>
+    </div>
+    <div class="topnav-right">
+      <div class="topnav-icon" title="Search">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7.5" stroke="currentColor" stroke-width="1.8"/><path d="m17 17 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <div class="topnav-icon" title="Create new">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v10M7 12h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <div class="topnav-icon" title="Help">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.8"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.95.5c0 1.5-2.45 2-2.45 3.5M12 17.5v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <div class="avatar-btn" title="Barbara">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="8" r="4" stroke="white" stroke-width="1.8"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Sidebar (full nav from Account Settings screenshot) -->
+  <aside class="as-sidebar">
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/></svg></span>Dashboard
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M2 20c0-4 3.1-7 7-7s7 3 7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 3.2a4 4 0 0 1 0 7.6M22 20c0-3.5-2.5-6.3-6-7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Contacts
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Activities
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>Opportunities
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5z" stroke="currentColor" stroke-width="1.7"/><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Web to Lead
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.7"/><path d="M8 9h8M8 13h5M8 17h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Invoices
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5z" stroke="currentColor" stroke-width="1.7"/><path d="M8 9h8M8 13h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Estimates
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.7"/><path d="M8 8h8M8 12h5M8 16h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Sales Receipts
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M2 10h20" stroke="currentColor" stroke-width="1.7"/><path d="M6 15h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Payments
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h10l6 6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 4v6h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 14h8M8 18h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Items
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>Accounts
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Sales Reps
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h10M4 17h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Classes
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Terms
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16v3l-7 7v6H7v-6L4 7V4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>Send Email
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.7"/></svg></span>Sales Orders
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Time Tracking
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M6 2h12l4 6-10 14L2 8z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M2 8h20" stroke="currentColor" stroke-width="1.7"/></svg></span>Purchase Orders
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 2v6h6M8 13h8M8 17h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Bills
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 3v18M2 9h20M2 15h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Work Orders
+    </div>
+    <div class="nav-item">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="1.5" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M9 9v12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Editable Grid
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="as-main">
+    <div class="as-main-inner">
+      <a class="as-back" onclick="backToItems()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back
+      </a>
+      <div class="as-heading">
+        <div class="as-gear">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.77 1.77M17.33 17.33l1.77 1.77M4.9 19.1l1.77-1.77M17.33 6.67l1.77-1.77" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <h1>Account Settings</h1>
+      </div>
+
+      <div class="settings-list">
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-name">Subscription</div>
+            <div class="settings-row-desc">Update your payment method and app subscriptions.</div>
+          </div>
+          <a class="settings-row-link">Subscription settings</a>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-name">Users</div>
+            <div class="settings-row-desc">Update user information, and invite more users to Method.</div>
+          </div>
+          <a class="settings-row-link">User settings</a>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-name">Display</div>
+            <div class="settings-row-desc">Upload your company logo, and set your display preferences.</div>
+          </div>
+          <a class="settings-row-link" onclick="goToDisplaySettings()">Display settings</a>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-name">Communication</div>
+            <div class="settings-row-desc">Set your email signature and sending preferences.</div>
+          </div>
+          <a class="settings-row-link">Communication settings</a>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-name">Notifications</div>
+            <div class="settings-row-desc">Set where and how you receive activity reminders.</div>
+          </div>
+          <a class="settings-row-link">Notification settings</a>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-name">Tables &amp; Fields</div>
+            <div class="settings-row-desc">Create and review Tables &amp; Fields to use for customization.</div>
+          </div>
+          <a class="settings-row-link">Tables &amp; Fields settings</a>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-name">Portal</div>
+            <div class="settings-row-desc">Method's portal is a dedicated and secure web page for your customers to access information shared with them.</div>
+          </div>
+          <a class="settings-row-link">Portal settings</a>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-name">Audit Trail</div>
+            <div class="settings-row-desc">Review historical changes made to your Method Account.</div>
+          </div>
+          <a class="settings-row-link">Audit Trail settings</a>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-name">App Routines</div>
+            <div class="settings-row-desc">See a list of app routines that have been queued up to run.</div>
+          </div>
+          <a class="settings-row-link">App Routine settings</a>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-name">Reports &amp; Print Templates</div>
+            <div class="settings-row-desc">Create, manage and update your report and print template settings.</div>
+          </div>
+          <a class="settings-row-link">Reports &amp; Print Templates settings</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Display Settings page -->
+<div class="display-settings-page" id="displaySettingsPage">
+
+  <!-- Topnav with "Account Settings" title in nav bar -->
+  <nav class="as-topnav">
+    <div class="as-topnav-logo">
+      <span class="method-wordmark">method</span>
+      <span style="color:rgba(255,255,255,.6);cursor:pointer;display:flex;align-items:center;">
+        <svg width="16" height="14" viewBox="0 0 18 14" fill="none"><path d="M0 1h18M0 7h18M0 13h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </span>
+    </div>
+    <span class="ds-nav-title" onclick="backToAccountSettings()">Account Settings</span>
+    <div class="topnav-right">
+      <div class="topnav-icon" title="Create new">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v10M7 12h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <div class="topnav-icon" title="Search">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7.5" stroke="currentColor" stroke-width="1.8"/><path d="m17 17 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <div class="topnav-icon" title="Help">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.8"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.95.5c0 1.5-2.45 2-2.45 3.5M12 17.5v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <div class="avatar-btn" title="Barbara">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="white" stroke-width="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <aside class="as-sidebar">
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/></svg></span>Dashboard</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M2 20c0-4 3.1-7 7-7s7 3 7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 3.2a4 4 0 0 1 0 7.6M22 20c0-3.5-2.5-6.3-6-7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Contacts</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Activities</div>
+    <div class="nav-item" style="color:rgba(255,255,255,.4)"><span class="icon" style="opacity:.5"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>Opportunities</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5z" stroke="currentColor" stroke-width="1.7"/><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Web to Lead</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.7"/><path d="M8 9h8M8 13h5M8 17h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Invoices</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5z" stroke="currentColor" stroke-width="1.7"/><path d="M8 9h8M8 13h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Estimates</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.7"/><path d="M8 8h8M8 12h5M8 16h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Sales Receipts</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M2 10h20" stroke="currentColor" stroke-width="1.7"/><path d="M6 15h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Payments</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h10l6 6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 4v6h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Items</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>Accounts</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Sales Reps</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h10M4 17h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Classes</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Terms</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16v3l-7 7v6H7v-6L4 7V4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>Send Email</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.7"/></svg></span>Sales Orders</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Time Tracking</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M6 2h12l4 6-10 14L2 8z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M2 8h20" stroke="currentColor" stroke-width="1.7"/></svg></span>Purchase Orders</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 2v6h6M8 13h8M8 17h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Bills</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 3v18M2 9h20M2 15h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Work Orders</div>
+    <div class="nav-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="1.5" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M9 9v12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Editable Grid</div>
+  </aside>
+
+  <!-- Main content — white, directly with sections -->
+  <div class="ds-main">
+
+    <!-- Date formats -->
+    <div class="ds-section">
+      <div class="ds-section-label">
+        <h3>Date formats</h3>
+        <p>For everything on Method CRM from customer portals to email and report templates.</p>
+      </div>
+      <div class="ds-card">
+        <div class="ds-card-row">
+          <div class="ds-field-name">Date</div>
+          <div>
+            <label class="radio-opt"><input type="radio" name="date-fmt" checked> Aug-16-2025</label>
+            <label class="radio-opt"><input type="radio" name="date-fmt"> 08-16-2025</label>
+            <label class="radio-opt"><input type="radio" name="date-fmt"> August 16 2025</label>
+            <label class="radio-opt"><input type="radio" name="date-fmt"> 16-Aug-2025</label>
+          </div>
+        </div>
+        <div class="ds-card-row">
+          <div class="ds-field-name">Month</div>
+          <div>
+            <label class="radio-opt"><input type="radio" name="month-fmt" checked> Aug</label>
+            <label class="radio-opt"><input type="radio" name="month-fmt"> 08</label>
+            <label class="radio-opt"><input type="radio" name="month-fmt"> August</label>
+          </div>
+        </div>
+        <div class="ds-card-row">
+          <div class="ds-field-name">Month and year</div>
+          <div>
+            <label class="radio-opt"><input type="radio" name="monthyr-fmt" checked> Aug-2025</label>
+            <label class="radio-opt"><input type="radio" name="monthyr-fmt"> 08-2025</label>
+            <label class="radio-opt"><input type="radio" name="monthyr-fmt"> Aug 2025</label>
+            <label class="radio-opt"><input type="radio" name="monthyr-fmt"> August 2025</label>
+          </div>
+        </div>
+        <div class="ds-save-row"><button class="ds-save-btn">Save all changes</button></div>
+      </div>
+    </div>
+
+    <!-- Number formats -->
+    <div class="ds-section">
+      <div class="ds-section-label">
+        <h3>Number formats</h3>
+        <p>For everything on Method CRM from customer portals to email and report templates.</p>
+      </div>
+      <div class="ds-card">
+        <div class="ds-card-row">
+          <div class="ds-field-name">Negative value</div>
+          <div>
+            <label class="radio-opt"><input type="radio" name="neg-fmt" checked> -99.99 - prepend a minus symbol</label>
+            <label class="radio-opt"><input type="radio" name="neg-fmt"> (99.99) - enclose in brackets</label>
+          </div>
+        </div>
+        <div class="ds-card-row">
+          <div class="ds-field-name">Thousands separator</div>
+          <div>
+            <label class="radio-opt"><input type="radio" name="thou-fmt" checked> 1,000.00 - add a comma after the thousandth integer</label>
+            <label class="radio-opt"><input type="radio" name="thou-fmt"> 1000.00 - do not add a comma</label>
+          </div>
+        </div>
+        <div class="ds-save-row"><button class="ds-save-btn">Save all changes</button></div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="ds-section">
+      <div class="ds-section-label">
+        <h3>Navigation</h3>
+        <p>For opening a screen from within the side panel.</p>
+      </div>
+      <div class="ds-card">
+        <div class="ds-card-row">
+          <div class="ds-field-name">Go to screen action default behavior</div>
+          <div>
+            <label class="radio-opt"><input type="radio" name="nav-fmt"> Open in Main Panel</label>
+            <label class="radio-opt"><input type="radio" name="nav-fmt" checked> Open in Current Panel <em>(Recommended)</em></label>
+          </div>
+        </div>
+        <div class="ds-save-row"><button class="ds-save-btn">Save all changes</button></div>
+      </div>
+    </div>
+
+    <!-- Inventory Management (IM) -->
+    <div class="ds-section">
+      <div class="ds-section-label">
+        <h3>Inventory Management (IM)</h3>
+        <p>Track stock levels and manage orders with inventory synced across locations for sales orders, purchase orders, and items.</p>
+      </div>
+      <div class="ds-card">
+        <div class="ds-card-heading">Enable/disable IM</div>
+        <div class="ds-card-desc">New transactions become inventory transactions and stop syncing to QuickBooks. When disabled, new transactions become accounting-only; previously synced transactions are unaffected.</div>
+        <label class="radio-opt" style="margin-bottom:10px;"><input type="radio" name="im-toggle" onclick="showEnableIMModal()"> Enable</label>
+        <label class="radio-opt" style="margin-bottom:0;"><input type="radio" name="im-toggle"> Disable</label>
+        <div class="ds-save-row"><button class="ds-save-btn-solid">Save all changes</button></div>
+      </div>
+    </div>
+
+    <!-- Help articles -->
+    <div class="ds-help-section">
+      <h3>Help articles</h3>
+      <a class="ds-help-link">Account Settings: Display</a>
+      <a class="ds-help-link">Update Your Company Logo and Brand Color</a>
+      <a class="ds-help-link">How time zones are set</a>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Enable Inventory Management Modal -->
+<div class="modal-overlay" id="enableIMOverlay" onclick="closeEnableIMModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Enable Inventory Management</h2>
+      <button class="modal-close" onclick="closeEnableIMModal()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3 3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-body">
+      <p>The new Inventory management feature tracks your quantities across in Stock, Committed, Expected, and Available statuses.</p>
+      <p>To start tracking your current items, assign them to locations using stock adjustments or purchase orders.</p>
+      <h3>Important information</h3>
+      <ul>
+        <li>Transactions created before today, and any transactions synced from QuickBooks, won't get the inventory management features.</li>
+        <li>New Sales Orders and Purchase Orders created in Method will be tracked as inventory transactions and will not sync to QuickBooks. They may also be blocked if stock is insufficient.</li>
+        <li>If your inventory screens are customized, contact a solution specialist to create an integration plan before enabling. Disabling later requires restoring those screens to default by removing screen redirects. Not sure how? <a>Contact support</a></li>
+      </ul>
+      <div class="modal-checkbox-row">
+        <input type="checkbox" id="im-understand">
+        <label for="im-understand">I understand these changes.</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn-cancel" onclick="closeEnableIMModal()">Cancel</button>
+      <button class="modal-btn-enable" onclick="confirmEnableIM()">Enable</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Disable IM Confirmation Modal ───────────────────────────────── -->
+<div id="disableIMOverlay" onclick="if(event.target===this)hideDisableIMModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:800;align-items:center;justify-content:center;">
+  <div onclick="event.stopPropagation()" style="background:#fff;border-radius:14px;width:580px;max-width:94vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.18);">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 24px 16px;">
+      <span style="font-size:17px;font-weight:700;color:#0F1B31">Disable Inventory Management</span>
+      <button onclick="hideDisableIMModal()" style="background:none;border:none;cursor:pointer;color:#6B7280;padding:4px;line-height:1;">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div style="height:1px;background:#E5E7EB;margin:0 0 20px;"></div>
+    <!-- Body -->
+    <div style="padding:0 24px 24px;font-size:14px;color:#1F2937;line-height:1.6;">
+      <p style="margin:0 0 14px;">Disabling Inventory Management will return your account to an accounting-only stock state.</p>
+      <p style="margin:0 0 20px;">Existing inventory transactions will remain visible in read-only mode. You won't be able to edit inventory activity until Inventory Management is re-enabled.</p>
+      <p style="font-size:15px;font-weight:700;color:#0F1B31;margin:0 0 10px;">Important information</p>
+      <ul style="margin:0 0 20px;padding-left:18px;display:flex;flex-direction:column;gap:10px;">
+        <li>All inventory screens, quantities, and fulfillment features will be hidden</li>
+        <li>Any Sales Orders or Purchase Orders created will permanently remain accounting-only records. These transactions will never be added to inventory tracking, even if you re-enable later.</li>
+        <li>If you re-enable Inventory Management later, inventory counts won't include activity from the disabled period. You'll need to perform stock adjustments to realign quantities.</li>
+      </ul>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:0;">
+        <input type="checkbox" id="disableIMUnderstand" onchange="updateDisableBtn()" style="width:16px;height:16px;accent-color:#2563EB;flex-shrink:0;">
+        <span>I understand these changes.</span>
+      </label>
+    </div>
+    <!-- Footer -->
+    <div style="display:flex;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid #F3F4F6;">
+      <button onclick="hideDisableIMModal()" style="padding:9px 22px;border-radius:99px;border:1.5px solid #D1D5DB;background:#fff;font-size:14px;font-weight:500;color:#374151;cursor:pointer;">Cancel</button>
+      <button id="disableIMConfirmBtn" disabled onclick="confirmDisableIM()" style="padding:9px 22px;border-radius:99px;border:none;background:#2563EB;font-size:14px;font-weight:500;color:#fff;cursor:not-allowed;opacity:0.45;transition:opacity .15s;">Disable</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Enable IM Stepper Modal ─────────────────────────────────────── -->
+<div class="im-modal-overlay" id="imModalOverlay" onclick="handleIMOverlayClick(event)">
+  <div class="im-modal" onclick="event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="im-modal-header">
+      <div>
+        <div class="im-modal-title" id="imModalTitle">Enable Inventory Management (IM)</div>
+      </div>
+      <button class="im-modal-close" onclick="closeIMModal()">×</button>
+    </div>
+
+    <!-- Stepper indicator -->
+    <div style="padding:16px 24px 0;display:flex;align-items:flex-start;gap:0">
+      <div class="im-stepper-col active" id="stepCol1">
+        <div class="im-step-dot active" id="stepDot1">1</div>
+        <div class="im-step-label">Overview</div>
+      </div>
+      <div class="im-stepper-spacer" id="stepLine1" style="padding-top:14px"><div style="height:2px;background:#E5E7EB;border-radius:1px;margin:0 4px"></div></div>
+      <div class="im-stepper-col pending" id="stepCol2">
+        <div class="im-step-dot pending" id="stepDot2">2</div>
+        <div class="im-step-label">Import</div>
+      </div>
+
+    </div>
+
+    <!-- Body -->
+    <div class="im-modal-body">
+
+      <!-- Step 1: Overview & confirmation -->
+      <div class="im-step-panel active" id="imStep1">
+        <div id="imStep1Content">
+          <p>The new Inventory Management feature tracks your item quantities across one or more locations, and ties stock levels directly to your sales orders and purchase orders.</p>
+          <p>Once enabled, new transactions will become <strong>inventory transactions</strong> and will no longer sync quantity changes back to QuickBooks automatically.</p>
+          <h3>Important information</h3>
+          <ul>
+            <li>Transactions created <strong>before today</strong> are unaffected and will continue to sync normally.</li>
+            <li>New Sales Orders and Purchase Orders will update Method's stock levels directly.</li>
+            <li>If your item screens are customized, some fields may need to be repositioned. <a>Contact support</a> for help.</li>
+            <li>Inventory Management can be <strong>disabled later</strong> from this page. Historical inventory data is preserved.</li>
+          </ul>
+        </div>
+        <div class="im-checkbox-row">
+          <input type="checkbox" id="imUnderstand" onchange="updateStep1Next()">
+          <label for="imUnderstand">I understand these changes and want to proceed.</label>
+        </div>
+      </div>
+
+      <!-- Step 2: QuickBooks import -->
+      <div class="im-step-panel" id="imStep2">
+        <p id="imStep2Intro" style="margin-bottom:12px">Would you like to <strong>import your existing inventory quantities</strong> to seed your starting stock levels in Method?</p>
+
+        <div style="display:flex;align-items:flex-start;gap:10px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:12px 14px;margin-bottom:16px">
+          <div style="width:20px;height:20px;border-radius:50%;background:#2563EB;color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;font-style:italic;font-family:Georgia,serif">i</div>
+          <p style="margin:0;font-size:12.5px;color:#374151;line-height:1.6">Quantities will be assigned to your <strong>default warehouse location</strong>. To reassign items to different locations or add new locations, go to <strong>Items</strong>.</p>
+        </div>
+
+        <label class="im-import-option selected" id="importOptYes" onclick="selectImportOpt('yes')">
+          <input type="radio" name="qb-import" value="yes" checked>
+          <div class="im-import-option-body">
+            <strong>Yes — import from QuickBooks</strong>
+
+            <span style="display:block">Your current QuickBooks inventory quantities will be pulled in as starting stock levels. The following fields will be mapped:</span>
+            <div class="im-field-map" style="margin-top:8px">
+              <div class="im-field-map-row">
+                <span class="im-field-pill fp-qb">Quantity on Hand (QOH)</span>
+                <span class="im-field-arrow">→</span>
+                <span class="im-field-pill fp-method">Quantity in Stock (QIS)</span>
+              </div>
+            </div>
+            <span style="font-size:11.5px;color:#9CA3AF;display:block;margin-top:6px">Imported quantities are recorded as stock adjustments.</span>
+          </div>
+        </label>
+
+        <label class="im-import-option" id="importOptNo" onclick="selectImportOpt('no')">
+          <input type="radio" name="qb-import" value="no">
+          <div class="im-import-option-body">
+            <strong>No — I'll enter quantities manually</strong>
+            <span>All items will start with 0 in stock. Use stock adjustments to set opening quantities at your own pace.</span>
+          </div>
+        </label>
+
+      </div>
+
+      <!-- Step 3: Importing progress -->
+      <div class="im-step-panel" id="imStep3" style="text-align:center;padding:8px 0 4px">
+
+        <!-- Two-warehouse illustration -->
+        <svg viewBox="0 0 500 162" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;margin:0 auto 8px;display:block">
+          <defs>
+            <path id="arcPath" d="M 139,106 C 200,28 300,28 361,106"/>
+          </defs>
+
+          <!-- Ground -->
+          <rect x="0" y="131" width="500" height="2" rx="1" fill="#E5E7EB"/>
+          <!-- Dashed road -->
+          <line x1="142" y1="128" x2="358" y2="128" stroke="#D1D5DB" stroke-width="1.5" stroke-dasharray="6 4"/>
+
+          <!-- ══ QuickBooks Warehouse (left) ══ -->
+          <polygon points="18,66 78,33 138,66" fill="#BBF7D0" stroke="#16A34A" stroke-width="1.5"/>
+          <line x1="78" y1="33" x2="78" y2="66" stroke="#16A34A" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.5"/>
+          <rect x="18" y="65" width="120" height="66" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/>
+          <!-- window -->
+          <rect x="27" y="76" width="38" height="26" rx="2" fill="white" fill-opacity="0.9" stroke="#16A34A" stroke-width="1"/>
+          <line x1="46" y1="76" x2="46" y2="102" stroke="#16A34A" stroke-width="0.7" opacity="0.5"/>
+          <line x1="27" y1="89" x2="65" y2="89" stroke="#16A3A" stroke-width="0.7" opacity="0.5"/>
+          <!-- door (right side, open) -->
+          <rect x="104" y="91" width="28" height="40" rx="1" fill="#4ADE80" opacity="0.35" stroke="#16A34A" stroke-width="1"/>
+          <rect x="104" y="91" width="13" height="40" rx="1" fill="#86EFAC" opacity="0.6"/>
+          <rect x="117" y="92" width="14" height="38" fill="#DCFCE7"/>
+          <!-- QB label -->
+          <text x="78" y="117" font-size="8.5" font-weight="700" fill="#15803D" text-anchor="middle" font-family="-apple-system,sans-serif">QuickBooks</text>
+          <text x="78" y="128" font-size="7" fill="#166534" text-anchor="middle" font-family="-apple-system,sans-serif">Qty on Hand</text>
+          <!-- Waiting boxes stacked left -->
+          <rect x="2" y="113" width="13" height="13" rx="2" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.2"/>
+          <rect x="2" y="99" width="13" height="13" rx="2" fill="#BBF7D0" stroke="#16A34A" stroke-width="1.2"/>
+          <rect x="2" y="85" width="13" height="13" rx="2" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.2"/>
+
+          <!-- ══ Method Warehouse (right) ══ -->
+          <polygon points="362,66 422,33 482,66" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.5"/>
+          <line x1="422" y1="33" x2="422" y2="66" stroke="#2563EB" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.5"/>
+          <rect x="362" y="65" width="120" height="66" fill="#DBEAFE" stroke="#2563EB" stroke-width="1.5"/>
+          <!-- window -->
+          <rect x="435" y="76" width="38" height="26" rx="2" fill="white" fill-opacity="0.9" stroke="#2563EB" stroke-width="1"/>
+          <line x1="454" y1="76" x2="454" y2="102" stroke="#2563EB" stroke-width="0.7" opacity="0.5"/>
+          <line x1="435" y1="89" x2="473" y2="89" stroke="#2563EB" stroke-width="0.7" opacity="0.5"/>
+          <!-- door (left side, open) -->
+          <rect x="368" y="91" width="28" height="40" rx="1" fill="#60A5FA" opacity="0.35" stroke="#2563EB" stroke-width="1"/>
+          <rect x="368" y="91" width="13" height="40" rx="1" fill="#93C5FD" opacity="0.6"/>
+          <rect x="369" y="92" width="13" height="38" fill="#DBEAFE"/>
+          <!-- Method label -->
+          <text x="422" y="117" font-size="8.5" font-weight="700" fill="#1D4ED8" text-anchor="middle" font-family="-apple-system,sans-serif">Method</text>
+          <text x="422" y="128" font-size="7" fill="#1E40AF" text-anchor="middle" font-family="-apple-system,sans-serif">Qty in Stock</text>
+          <!-- Arrived boxes stacked right -->
+          <rect x="485" y="113" width="13" height="13" rx="2" fill="#DBEAFE" stroke="#2563EB" stroke-width="1.2"/>
+          <rect x="485" y="99" width="13" height="13" rx="2" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.2"/>
+
+          <!-- ══ Continuous forklift pair — 6s cycle, 3s offset, always one on road ══ -->
+          <!-- Forklift A (begin 0s) -->
+          <g opacity="0">
+            <rect x="141" y="107" width="6" height="17" rx="2" fill="#4B5563"/>
+            <rect x="147" y="99" width="22" height="25" rx="2" fill="#374151"/>
+            <rect x="150" y="102" width="13" height="10" rx="1" fill="#93C5FD" fill-opacity="0.85"/>
+            <rect x="169" y="94" width="5" height="30" rx="1" fill="#6B7280"/>
+            <rect x="174" y="110" width="16" height="3" rx="1" fill="#9CA3AF"/>
+            <rect x="174" y="116" width="16" height="3" rx="1" fill="#9CA3AF"/>
+            <circle cx="150" cy="124" r="5" fill="#1F2937"/><circle cx="150" cy="124" r="2.5" fill="#6B7280"/>
+            <circle cx="171" cy="124" r="5" fill="#1F2937"/><circle cx="171" cy="124" r="2.5" fill="#6B7280"/>
+            <rect x="173" y="100" width="15" height="10" rx="2" fill="#FEF3C7" stroke="#D97706" stroke-width="1.2"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.46;0.53;1" dur="6s" begin="0s" repeatCount="indefinite"/></rect>
+            <rect x="174" y="91"  width="14" height="9"  rx="2" fill="#FDE68A" stroke="#D97706" stroke-width="1"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.46;0.53;1" dur="6s" begin="0s" repeatCount="indefinite"/></rect>
+            <rect x="175" y="83"  width="13" height="8"  rx="2" fill="#FEF9C3" stroke="#CA8A04" stroke-width="1"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.46;0.53;1" dur="6s" begin="0s" repeatCount="indefinite"/></rect>
+            <animateTransform attributeName="transform" type="translate"
+              values="0,0; 0,0; 175,0; 175,0; 0,0; 0,0"
+              keyTimes="0; 0.05; 0.45; 0.55; 0.56; 1"
+              calcMode="spline" keySplines="0 0 1 1; 0.4 0 0.2 1; 0 0 1 1; 0 0 1 1; 0 0 1 1"
+              dur="6s" begin="0s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.05;0.50;0.55;1" dur="6s" begin="0s" repeatCount="indefinite"/>
+          </g>
+          <!-- Forklift B (begin 3s — perfect handoff) -->
+          <g opacity="0">
+            <rect x="141" y="107" width="6" height="17" rx="2" fill="#4B5563"/>
+            <rect x="147" y="99" width="22" height="25" rx="2" fill="#374151"/>
+            <rect x="150" y="102" width="13" height="10" rx="1" fill="#93C5FD" fill-opacity="0.85"/>
+            <rect x="169" y="94" width="5" height="30" rx="1" fill="#6B7280"/>
+            <rect x="174" y="110" width="16" height="3" rx="1" fill="#9CA3AF"/>
+            <rect x="174" y="116" width="16" height="3" rx="1" fill="#9CA3AF"/>
+            <circle cx="150" cy="124" r="5" fill="#1F2937"/><circle cx="150" cy="124" r="2.5" fill="#6B7280"/>
+            <circle cx="171" cy="124" r="5" fill="#1F2937"/><circle cx="171" cy="124" r="2.5" fill="#6B7280"/>
+            <rect x="173" y="100" width="15" height="10" rx="2" fill="#FEF3C7" stroke="#D97706" stroke-width="1.2"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.46;0.53;1" dur="6s" begin="3s" repeatCount="indefinite"/></rect>
+            <rect x="174" y="91"  width="14" height="9"  rx="2" fill="#FDE68A" stroke="#D97706" stroke-width="1"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.46;0.53;1" dur="6s" begin="3s" repeatCount="indefinite"/></rect>
+            <rect x="175" y="83"  width="13" height="8"  rx="2" fill="#FEF9C3" stroke="#CA8A04" stroke-width="1"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.46;0.53;1" dur="6s" begin="3s" repeatCount="indefinite"/></rect>
+            <animateTransform attributeName="transform" type="translate"
+              values="0,0; 0,0; 175,0; 175,0; 0,0; 0,0"
+              keyTimes="0; 0.05; 0.45; 0.55; 0.56; 1"
+              calcMode="spline" keySplines="0 0 1 1; 0.4 0 0.2 1; 0 0 1 1; 0 0 1 1; 0 0 1 1"
+              dur="6s" begin="3s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.05;0.50;0.55;1" dur="6s" begin="3s" repeatCount="indefinite"/>
+          </g>
+        </svg>
+
+        <div style="font-size:17px;font-weight:700;color:#0F1B31;margin-bottom:5px">We're doing the heavy lifting.</div>
+        <div style="font-size:13px;color:#6B7280;margin-bottom:20px">Your inventory is on the move — boxes incoming.</div>
+
+        <!-- Indeterminate progress -->
+        <div style="text-align:left;margin-bottom:6px">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+            <span style="background:#DCFCE7;color:#166534;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:700">Quantity on Hand (QOH)</span>
+            <span style="color:#9CA3AF">→</span>
+            <span style="background:#DBEAFE;color:#1E40AF;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:700">Quantity in Stock (QIS)</span>
+          </div>
+          <div style="height:8px;background:#F3F4F6;border-radius:4px;overflow:hidden">
+            <div style="height:100%;width:40%;border-radius:4px;background:linear-gradient(90deg,#2563EB,#60A5FA,#2563EB);background-size:200% 100%;animation:shimmer 1.6s ease-in-out infinite"></div>
+          </div>
+          <div style="font-size:11.5px;color:#9CA3AF;margin-top:6px">Syncing in the background. We'll keep things running while you work.</div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="im-modal-footer">
+      <div class="im-footer-left">
+        <button class="im-btn im-btn-cancel" id="imCancelBtn" onclick="closeIMModal()">Cancel</button>
+        <button class="im-btn im-btn-back" id="imBackBtn" style="display:none" onclick="imGoBack()">Back</button>
+      </div>
+      <button class="im-btn im-btn-next" id="imNextBtn" disabled onclick="imGoNext()">Next</button>
+      <button class="im-btn im-btn-enable" id="imEnableBtn" style="display:none" onclick="imEnableOrNext()">Next</button>
+      <button class="im-btn im-btn-enable" id="imDoneBtn" style="display:none;background:#2563EB" onclick="confirmEnableIM()">Notify me when it's done</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var dropOpen = true;
+
+function toggleDropdown() {
+  dropOpen = !dropOpen;
+  document.getElementById('userDropdown').hidden = !dropOpen;
+  document.getElementById('overlayDim').hidden = !dropOpen;
+}
+function goToSettings() {
+  dropOpen = false;
+  document.getElementById('userDropdown').hidden = true;
+  document.getElementById('overlayDim').hidden = true;
+  document.getElementById('acctSettingsPage').classList.add('visible');
+}
+function backToItems() {
+  document.getElementById('acctSettingsPage').classList.remove('visible');
+}
+function goToDisplaySettings() {
+  document.getElementById('acctSettingsPage').classList.remove('visible');
+  document.getElementById('displaySettingsPage').classList.add('visible');
+}
+function backToAccountSettings() {
+  document.getElementById('displaySettingsPage').classList.remove('visible');
+  document.getElementById('acctSettingsPage').classList.add('visible');
+}
+
+// ── Enable IM stepper ──────────────────────────────────────────────
+function showIMModal() {
+  isReenableFlow = false;
+  // Restore original Step 1 content
+  if (STEP1_ENABLE_HTML) document.getElementById('imStep1Content').innerHTML = STEP1_ENABLE_HTML;
+  document.getElementById('imUnderstand').checked = false;
+  document.getElementById('imNextBtn').disabled = true;
+  setIMStep(1);
+  document.getElementById('imModalOverlay').classList.add('visible');
+}
+function closeIMModal() {
+  document.getElementById('imModalOverlay').classList.remove('visible');
+  updateIMToggles();
+}
+function handleIMOverlayClick(e) {
+  if (e.target === document.getElementById('imModalOverlay')) closeIMModal();
+}
+function updateStep1Next() {
+  document.getElementById('imNextBtn').disabled = !document.getElementById('imUnderstand').checked;
+}
+function selectImportOpt(val) {
+  document.getElementById('importOptYes').classList.toggle('selected', val === 'yes');
+  document.getElementById('importOptNo').classList.toggle('selected', val === 'no');
+  var btn = document.getElementById('imEnableBtn');
+  if (val === 'no') {
+    btn.textContent = 'Add items';
+    document.getElementById('imModalTitle').textContent = isReenableFlow ? 'Re-enable Inventory Management (IM)' : 'Enable Inventory Management (IM)';
+    document.getElementById('stepCol3').style.display = 'none';
+    document.getElementById('stepLine2').style.display = 'none';
+  } else {
+    btn.textContent = 'Next';
+    document.getElementById('imModalTitle').textContent = isReenableFlow ? 'Re-enable Inventory Management (IM)' : 'Enable Inventory Management (IM)';
+    document.getElementById('imStep2Intro').textContent = isReenableFlow
+      ? 'We\'ll only import changes made to your inventory in QuickBooks while Inventory Management was disabled — not everything again.'
+      : 'Would you like to import your existing inventory quantities to seed your starting stock levels in Method?';
+    document.getElementById('stepCol3').style.display = '';
+    document.getElementById('stepLine2').style.display = '';
+  }
+}
+
+function setIMStep(n) {
+  document.getElementById('imStep1').classList.toggle('active', n === 1);
+  document.getElementById('imStep2').classList.toggle('active', n === 2);
+  document.getElementById('imStep3').classList.toggle('active', n === 3);
+
+  var checkSvg = '<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var d1 = document.getElementById('stepDot1'), c1 = document.getElementById('stepCol1');
+  var d2 = document.getElementById('stepDot2'), c2 = document.getElementById('stepCol2');
+  var d3 = document.getElementById('stepDot3'), c3 = document.getElementById('stepCol3');
+  var l1 = document.getElementById('stepLine1').querySelector('div');
+  var l2 = document.getElementById('stepLine2').querySelector('div');
+
+  if (n === 1) {
+    d1.className = 'im-step-dot active';  d1.innerHTML = '1'; c1.className = 'im-stepper-col active';
+    d2.className = 'im-step-dot pending'; d2.innerHTML = '2'; c2.className = 'im-stepper-col pending';
+    d3.className = 'im-step-dot pending'; d3.innerHTML = '3'; c3.className = 'im-stepper-col pending';
+    l1.style.background = '#E5E7EB'; l2.style.background = '#E5E7EB';
+    document.getElementById('imModalTitle').textContent = isReenableFlow ? 'Re-enable Inventory Management (IM)' : 'Enable Inventory Management (IM)';
+    document.getElementById('imNextBtn').style.display = '';
+    document.getElementById('imNextBtn').disabled = !document.getElementById('imUnderstand').checked;
+    document.getElementById('imEnableBtn').style.display = 'none';
+    document.getElementById('imDoneBtn').style.display = 'none';
+    document.getElementById('imBackBtn').style.display = 'none';
+    document.getElementById('imCancelBtn').style.display = '';
+  } else if (n === 2) {
+    d1.className = 'im-step-dot done';   d1.innerHTML = checkSvg; c1.className = 'im-stepper-col done';
+    d2.className = 'im-step-dot active'; d2.innerHTML = '2';      c2.className = 'im-stepper-col active';
+    d3.className = 'im-step-dot pending';d3.innerHTML = '3';      c3.className = 'im-stepper-col pending';
+    l1.style.background = '#6EE7B7'; l2.style.background = '#E5E7EB';
+    document.getElementById('imModalTitle').textContent = 'Import from QuickBooks';
+    document.getElementById('imStep2Intro').textContent = isReenableFlow
+      ? 'We\'ll only import changes made to your inventory in QuickBooks while Inventory Management was disabled — not everything again.'
+      : 'Would you like to import your existing inventory quantities to seed your starting stock levels in Method?';
+    document.getElementById('imNextBtn').style.display = 'none';
+    document.getElementById('imEnableBtn').style.display = '';
+    document.getElementById('imDoneBtn').style.display = 'none';
+    document.getElementById('imBackBtn').style.display = '';
+    document.getElementById('imCancelBtn').style.display = 'none';
+  } else {
+    d1.className = 'im-step-dot done';   d1.innerHTML = checkSvg; c1.className = 'im-stepper-col done';
+    d2.className = 'im-step-dot done';   d2.innerHTML = checkSvg; c2.className = 'im-stepper-col done';
+    d3.className = 'im-step-dot active'; d3.innerHTML = '3';      c3.className = 'im-stepper-col active';
+    l1.style.background = '#6EE7B7'; l2.style.background = '#6EE7B7';
+    document.getElementById('imModalTitle').textContent = isReenableFlow ? 'Re-enable Inventory Management (IM)' : 'Enable Inventory Management (IM)';
+    document.getElementById('qbWarehouse').style.display = isReenableFlow ? 'none' : '';
+    document.getElementById('qbTruck').style.display     = isReenableFlow ? '' : 'none';
+    document.getElementById('imNextBtn').style.display = 'none';
+    document.getElementById('imEnableBtn').style.display = 'none';
+    document.getElementById('imDoneBtn').style.display = '';
+    document.getElementById('imBackBtn').style.display = 'none';
+    document.getElementById('imCancelBtn').style.display = 'none';
+    startSyncTimer();
+    updateDoneBtn();
+  }
+}
+
+
+
+function imEnableOrNext() {
+  var noSelected = document.getElementById('importOptNo').classList.contains('selected');
+  if (noSelected) {
+    confirmEnableIM();
+  } else {
+    setIMStep(3);
+  }
+}
+function imGoNext() {
+  var cur = document.getElementById('imStep1').classList.contains('active') ? 1
+          : document.getElementById('imStep2').classList.contains('active') ? 2 : 3;
+  setIMStep(cur + 1);
+}
+function imGoBack() {
+  setIMStep(1);
+}
+function confirmEnableIM() {
+  imDisabled = false;
+  setIMEnabledDate();
+  updateIMToggles();
+  var notifyChecked = document.getElementById('notifyWhenDone').checked;
+  document.getElementById('imModalOverlay').classList.remove('visible');
+  document.getElementById('addItemsPage').classList.add('visible');
+  if (!notifyChecked) return;
+  if (syncComplete) {
+    setTimeout(showSyncToast, 400);
+  } else {
+    toastPending = true;
+  }
+}
+var imDisabled = false;
+var isReenableFlow = false;
+var imEnabledDate = null;
+
+function setIMEnabledDate() {
+  var d = new Date();
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  imEnabledDate = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+  var lbl = document.getElementById('imEnabledDateLabel');
+  var val = document.getElementById('imEnabledDateVal');
+  if (lbl && val) { val.textContent = imEnabledDate; lbl.style.display = ''; }
+}
+function hideIMEnabledDate() {
+  var lbl = document.getElementById('imEnabledDateLabel');
+  if (lbl) lbl.style.display = 'none';
+}
+function updateIMToggles() {
+  var enableRow   = document.getElementById('imToggleEnableRow');
+  var disableRow  = document.getElementById('imToggleDisableRow');
+  var reenableRow = document.getElementById('imToggleReenableRow');
+  var neverEnabled = !imEnabledDate;
+  if (imDisabled) {
+    // Disabled state: hide Enable, show Disable (checked) + Re-enable
+    enableRow.style.display   = 'none';
+    disableRow.style.display  = '';
+    reenableRow.style.display = '';
+    disableRow.querySelector('input').checked  = true;
+    reenableRow.querySelector('input').checked = false;
+    // Show last enabled date when disabled
+    var lbl = document.getElementById('imEnabledDateLabel');
+    var val = document.getElementById('imEnabledDateVal');
+    if (lbl && val && imEnabledDate) { val.textContent = imEnabledDate; lbl.style.display = ''; }
+  } else {
+    // Enabled (or first-time) state: show Enable (checked) + Disable, hide Re-enable
+    enableRow.style.display   = '';
+    disableRow.style.display  = '';
+    reenableRow.style.display = neverEnabled ? 'none' : 'none'; // always hidden when enabled
+    enableRow.querySelector('input').checked  = imEnabledDate ? true : false;
+    disableRow.querySelector('input').checked = imEnabledDate ? false : true;
+  }
+}
+
+var STEP1_ENABLE_HTML = null; // populated on first run
+
+var STEP1_REENABLE_HTML = '<p>Inventory monitoring will continue from the first date of enablement. Inventory transactions that were read-only become editable again.</p>'
+  + '<h3>Important information</h3>'
+  + '<ul>'
+  + '<li>Transactions created while Inventory Management was disabled will remain accounting-only and won’t affect inventory counts. You may need to perform stock adjustments to realign inventory.</li>'
+  + '<li>Inventory items created or synced from QuickBooks while Inventory Management was disabled won’t be assigned to a location or tracked in inventory. To start tracking them, assign them to a location using a stock adjustment or Purchase Order.</li>'
+  + '</ul>';
+
+function showDisableIMModal() {
+  var el = document.getElementById('disableIMOverlay');
+  el.style.display = 'flex';
+  document.getElementById('disableIMUnderstand').checked = false;
+  updateDisableBtn();
+}
+function hideDisableIMModal() {
+  document.getElementById('disableIMOverlay').style.display = 'none';
+}
+function confirmDisableIM() {
+  imDisabled = true;
+  updateIMToggles();
+  hideDisableIMModal();
+}
+function updateDisableBtn() {
+  var checked = document.getElementById('disableIMUnderstand').checked;
+  var btn = document.getElementById('disableIMConfirmBtn');
+  btn.disabled = !checked;
+  btn.style.opacity = checked ? '1' : '0.45';
+  btn.style.cursor = checked ? 'pointer' : 'not-allowed';
+}
+function onReenableRadioSelect() {
+  var lbl = document.getElementById('imEnabledDateLabel');
+  var val = document.getElementById('imEnabledDateVal');
+  if (lbl && val && imEnabledDate) { val.textContent = imEnabledDate; lbl.style.display = ''; }
+  confirmReenableIM();
+}
+function onDisableRadioClick() {
+  if (imDisabled) { onReenableRadioSelect(); return; }
+  showDisableIMModal();
+}
+function saveIMChanges() {
+  var reenableInput = document.querySelector('#imToggleReenableRow input');
+  if (reenableInput && reenableInput.checked) { confirmReenableIM(); }
+}
+function confirmReenableIM() {
+  isReenableFlow = true;
+  // Save original content once, then swap to re-enable text
+  var el = document.getElementById('imStep1Content');
+  if (!STEP1_ENABLE_HTML) STEP1_ENABLE_HTML = el.innerHTML;
+  el.innerHTML = STEP1_REENABLE_HTML;
+  document.getElementById('imUnderstand').checked = false;
+  document.getElementById('imNextBtn').disabled = true;
+  setIMStep(1);
+  document.getElementById('imModalOverlay').classList.add('visible');
+}
+function backFromAddItems() {
+  document.getElementById('addItemsPage').classList.remove('visible');
+}
+</script>
+<style>
+  #syncToast {
+    position:fixed; top:20px; right:24px; z-index:9999;
+    display:flex; align-items:flex-start; gap:14px;
+    background:#E4F4EE; border-radius:12px;
+    padding:16px 18px 16px 16px; width:400px;
+    opacity:0; transform:translateY(-10px);
+    transition:opacity 0.2s ease, transform 0.2s ease;
+    pointer-events:none;
+  }
+  #syncToast.toast-visible { opacity:1; transform:translateY(0); pointer-events:auto; }
+</style>
+<div id="syncToast">
+  <div style="flex-shrink:0;width:36px;height:36px;border-radius:50%;background:#1A7A4A;display:flex;align-items:center;justify-content:center;margin-top:1px">
+    <svg width="17" height="17" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 4.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <div style="flex:1;min-width:0">
+    <div style="font-size:14px;font-weight:700;color:#0F1B31;margin-bottom:4px">Inventory synced</div>
+    <div style="font-size:13px;color:#374151;margin-bottom:6px;line-height:1.4">Your Qty in Stock has been updated.</div>
+    <div style="font-size:13px;color:#2563EB;font-weight:500;cursor:pointer" onclick="refreshItemsData()">Refresh item screen</div>
+  </div>
+  <button onclick="document.getElementById('syncToast').classList.remove('toast-visible')" style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:2px;color:#6B7280;margin-top:-2px;line-height:1">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
+</div>
+<!-- ── Add Items page ──────────────────────────────────────────────── -->
+<div class="add-items-page" id="addItemsPage">
+
+  <nav class="ai-topnav">
+    <div class="ai-topnav-logo">
+      <span class="method-wordmark">method</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="color:rgba(255,255,255,.6)"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </div>
+    <span class="ai-topnav-title">Items</span>
+    <div class="ai-topnav-right">
+      <div class="topnav-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v10M7 12h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      <div class="topnav-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7.5" stroke="currentColor" stroke-width="1.8"/><path d="m17 17 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      <div class="ai-topnav-sep"></div>
+      <div class="topnav-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.8"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.95.5c0 1.5-2.45 2-2.45 3.5M12 17.5v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      <div class="crm-av">EC</div>
+    </div>
+  </nav>
+
+  <aside class="ai-sidebar">
+    <div class="ai-nav"><svg viewBox="0 0 24 24" fill="none"><path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5z" stroke="currentColor" stroke-width="1.7"/><path d="M8 9h8M8 13h5M8 17h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Estimates</div>
+    <div class="ai-nav"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>Accounts</div>
+    <div class="ai-nav"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Activities</div>
+    <div class="ai-nav on"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h10l6 6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 4v6h6M8 14h8M8 18h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Items</div>
+    <div class="ai-nav"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Sales Reps</div>
+    <div class="ai-nav"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>Opportunities</div>
+    <div class="ai-nav"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Time Tracking</div>
+    <div class="ai-nav"><svg viewBox="0 0 24 24" fill="none"><path d="M6 2h12l4 6-10 14L2 8z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M2 8h20" stroke="currentColor" stroke-width="1.7"/></svg>Purchase Orders</div>
+    <div class="ai-nav"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M2 20c0-4 3.1-7 7-7s7 3 7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Field Crew</div>
+    <div class="ai-nav"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.7"/><path d="M8 9h8M8 13h5M8 17h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Invoices</div>
+    <div class="ai-nav"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M2 10h20" stroke="currentColor" stroke-width="1.7"/></svg>Payments</div>
+    <div class="ai-nav"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="12" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="15" cy="12" r="2" stroke="currentColor" stroke-width="1.5"/></svg>Jobs</div>
+    <div class="ai-nav"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>Vendors</div>
+    <div class="ai-nav"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Schedule</div>
+    <div class="ai-nav"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/></svg>App Marketplace</div>
+  </aside>
+
+  <main class="ai-main">
+    <div class="ai-subheader">
+      <a class="ai-back" onclick="backFromAddItems()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back
+      </a>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" style="display:flex;align-items:center;gap:6px;font-size:13px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+            Manage Locations
+          </button>
+          <button class="btn btn-primary" style="display:flex;align-items:center;gap:6px;font-size:13px">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+            New Item
+          </button>
+        </div>
+      </div>
+      <div id="itemsOpt2Banner" style="padding:0 0 12px;">
+        <div style="background:#EBF0FA;border-radius:10px;padding:14px 20px;">
+          <p style="margin:0;font-size:13.5px;color:#374151;line-height:1.6">The <strong>QTY on hand</strong> was synced from QuickBooks during enablement and is now reflected as your <strong>QTY in stock</strong> in Method.</p>
+        </div>
+      </div>
+      <div class="ai-tabs">
+        <div class="ai-tab on">All Items</div>
+        <div class="ai-tab">Adjusted Stock</div>
+      </div>
+    </div>
+
+    <div class="ai-toolbar">
+      <div class="ai-toolbar-left">
+        <div class="ai-myitems">
+          My Items
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="m4 6 4 4 4-4" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="ai-toolbar-right">
+        <div class="ai-search">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9CA3AF" stroke-width="1.4"/><path d="m11 11 3 3" stroke="#9CA3AF" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Search
+        </div>
+        <div class="ai-icon-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M7 12h10M11 18h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+        <div class="ai-icon-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6l9 9 9-9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 14l9 3 9-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+    </div>
+
+    <div id="itemsOpt2">
+    <div class="ai-tbl-wrap">
+      <table class="ai-tbl">
+        <thead>
+          <tr>
+            <th style="width:32px"><input type="checkbox" style="accent-color:#2563EB"></th>
+            <th>Item name</th>
+            <th>Type</th>
+            <th>SKU</th>
+            <th class="num">QTY on hand</th>
+            <th class="num">QTY in stock</th>
+            <th class="num">Committed</th>
+            <th class="num">QTY expected</th>
+            <th class="num">Available</th>
+          </tr>
+        </thead>
+        <tbody id="aiItemsTbody2">
+          <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    </div><!-- /itemsOpt2 -->
+
+    <div class="ai-foot">
+      <div class="ai-perpage">
+        Per Page
+        <select><option>25</option><option>10</option><option>50</option></select>
+      </div>
+      <span style="color:#2563EB;font-weight:500;cursor:pointer">Many results</span>
+      <div style="display:flex;align-items:center;gap:4px">
+        <button class="ai-pag-btn" disabled><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+        <span style="padding:0 8px;font-size:13px;color:#374151">1</span>
+        <button class="ai-pag-btn"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+      </div>
+    </div>
+  </main>
+
+
+
+</div>
+
+<!-- ── Sync toast notification ─────────────────────────────────────── -->
+<div id="syncToast" style="
+  position:fixed; bottom:28px; right:28px; z-index:9999;
+  display:flex; align-items:flex-start; gap:12px;
+  background:#fff; border:1px solid #E5E7EB; border-radius:12px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.12); padding:14px 16px;
+  max-width:320px; width:max-content;
+  transform:translateY(16px); opacity:0;
+  transition:opacity 0.25s ease, transform 0.25s ease;
+  pointer-events:none;
+">
+  <div style="flex-shrink:0;width:32px;height:32px;border-radius:50%;background:#DCFCE7;display:flex;align-items:center;justify-content:center;margin-top:1px">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 4.5" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <div style="flex:1;min-width:0">
+    <div style="font-size:13px;font-weight:600;color:#111827;margin-bottom:2px">Inventory synced</div>
+    <div style="font-size:12px;color:#6B7280;line-height:1.4">Your items are ready. Refresh the Items screen to see your updated Qty in Stock.</div>
+  </div>
+  <button onclick="document.getElementById('syncToast').classList.remove('visible')" style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:0;color:#9CA3AF;line-height:1;margin-top:1px">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+  </button>
+</div>
+<style>
+  #syncToast.visible { opacity:1; transform:translateY(0); pointer-events:auto; }
+</style>
+
+</body>
+</html>
