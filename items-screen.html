@@ -739,12 +739,11 @@ body {
   transition: border-color .15s, background .15s;
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   background: white;
 }
 .im-import-option:hover { border-color: #93C5FD; }
-.im-import-option.selected { border-color: #2563EB; background: white; }
+.im-import-option.selected { border-color: #2563EB; background: #EFF6FF; }
 .im-import-option input[type="radio"] { display: none; }
 .im-radio-circle {
   width: 20px;
@@ -771,7 +770,7 @@ body {
   background: white;
 }
 .im-import-option-body { flex: 1; min-width: 0; }
-.im-import-option-body strong { display: block; font-size: 13.5px; font-weight: 700; color: #0F1B31; margin-bottom: 3px; }
+.im-import-option-body strong { display: block; font-size: 14.5px; font-weight: 700; color: #0F1B31; margin-bottom: 4px; }
 .im-import-option-body span { font-size: 12.5px; color: #6B7280; line-height: 1.5; }
 .im-field-map {
   background: #F9FAFB;
@@ -1930,33 +1929,33 @@ document.getElementById('overlayDim').hidden = true;
 
       <!-- Step 2: QuickBooks import -->
       <div class="im-step-panel" id="imStep2">
-        <p id="imStep2Intro" style="margin-bottom:12px">Would you like to <strong>import your existing inventory quantities</strong> to seed your starting stock levels in Method?</p>
-
-        <div style="display:flex;align-items:flex-start;gap:10px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:12px 14px;margin-bottom:16px">
-          <div style="width:20px;height:20px;border-radius:50%;background:#2563EB;color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;font-style:italic;font-family:Georgia,serif">i</div>
-          <p style="margin:0;font-size:12.5px;color:#374151;line-height:1.6">Quantities will be assigned to your <strong>default warehouse location</strong>. To reassign items to different locations or add new locations, go to <strong>Items</strong>.</p>
-        </div>
+        <p id="imStep2Intro" style="font-size:13px;color:#6B7280;line-height:1.5;margin-bottom:16px">Would you like to import your existing inventory quantities to seed your starting stock levels in Method?</p>
 
         <label class="im-import-option selected" id="importOptYes" onclick="selectImportOpt('yes')">
-          <input type="radio" name="qb-import" value="yes" checked>
+          <div class="im-radio-circle"></div>
           <div class="im-import-option-body">
+            <input type="radio" name="qb-import" value="yes" checked>
             <strong>Yes — import from QuickBooks</strong>
-
-            <span style="display:block">Your current QuickBooks inventory quantities will be pulled in as starting stock levels. The following fields will be mapped:</span>
-            <div class="im-field-map" style="margin-top:8px">
+            <span style="display:block;margin-bottom:10px">Your current QuickBooks inventory quantities will be pulled in as starting stock levels. The following fields will be mapped:</span>
+            <div class="im-field-map">
               <div class="im-field-map-row">
                 <span class="im-field-pill fp-qb">Quantity on Hand (QOH)</span>
                 <span class="im-field-arrow">→</span>
                 <span class="im-field-pill fp-method">Quantity in Stock (QIS)</span>
               </div>
             </div>
-            <span style="font-size:11.5px;color:#9CA3AF;display:block;margin-top:6px">Imported quantities are recorded as stock adjustments.</span>
+            <div style="display:flex;align-items:flex-start;gap:8px;background:white;border:1px solid #BFDBFE;border-radius:6px;padding:8px 10px;margin-top:10px">
+              <div style="width:16px;height:16px;border-radius:50%;background:#2563EB;color:white;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;margin-top:1px;font-style:italic;font-family:Georgia,serif">i</div>
+              <p style="margin:0;font-size:11.5px;color:#374151;line-height:1.5">Quantities will be assigned to your <strong>default warehouse location</strong>. To reassign items or add locations, go to <strong>Items</strong>.</p>
+            </div>
+            <span style="font-size:11px;color:#9CA3AF;display:block;margin-top:8px">Imported quantities are recorded as stock adjustments.</span>
           </div>
         </label>
 
         <label class="im-import-option" id="importOptNo" onclick="selectImportOpt('no')">
-          <input type="radio" name="qb-import" value="no">
+          <div class="im-radio-circle"></div>
           <div class="im-import-option-body">
+            <input type="radio" name="qb-import" value="no">
             <strong>No — I'll enter quantities manually</strong>
             <span>All items will start with 0 in stock. Use stock adjustments to set opening quantities at your own pace.</span>
           </div>
