@@ -1812,8 +1812,9 @@ document.getElementById('overlayDim').hidden = true;
             <div id="imEnabledDateLabel" style="display:none;margin-top:10px;font-size:13px;color:#374151">Enabled on: <strong id="imEnabledDateVal"></strong></div>
           </div>
           <div>
-            <label class="radio-opt"><input type="radio" name="im-toggle" onclick="showIMModal()"> Enable</label>
-            <label class="radio-opt"><input type="radio" name="im-toggle"> Disable</label>
+            <label class="radio-opt" id="imToggleEnableRow"><input type="radio" name="im-toggle" onclick="showIMModal()"> Enable</label>
+            <label class="radio-opt" id="imToggleDisableRow"><input type="radio" name="im-toggle"> Disable</label>
+            <label class="radio-opt" id="imToggleReenableRow" style="display:none"><input type="radio" name="im-toggle" onclick="onReenableRadioSelect()"> Re-enable</label>
           </div>
         </div>
         <div class="ds-save-row"><button class="ds-save-btn-solid">Save all changes</button></div>
