@@ -1811,11 +1811,20 @@ document.getElementById('overlayDim').hidden = true;
         <p>Track stock levels and manage orders with inventory synced across locations for sales orders, purchase orders, and items.</p>
       </div>
       <div class="ds-card">
-        <div class="ds-card-heading">Inventory management status</div>
-        <div class="ds-card-desc">New transactions become inventory transactions and stop syncing to QuickBooks. When disabled, new transactions become accounting-only; previously synced transactions are unaffected.</div>
-        <label class="radio-opt" style="margin-bottom:10px;"><input type="radio" name="im-toggle" onclick="showIMModal()"> Enable</label>
-        <label class="radio-opt" style="margin-bottom:0;"><input type="radio" name="im-toggle"> Disable</label>
-        <div class="ds-save-row"><button class="ds-save-btn">Cancel</button><button class="ds-save-btn-solid">Save all changes</button></div>
+        <div style="display:flex;gap:32px;align-items:flex-start">
+          <div style="flex:1">
+            <div class="ds-card-heading">Inventory management status</div>
+            <div class="ds-card-desc" style="margin-bottom:0">New transactions become inventory transactions and stop syncing to QuickBooks. When disabled, new transactions become accounting-only; previously synced transactions are unaffected.</div>
+            <div id="imEnabledDateLabel" style="display:none;margin-top:12px;font-size:13.5px;color:#374151">Enabled on: <strong id="imEnabledDateVal"></strong></div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:16px;flex-shrink:0;padding-top:2px">
+            <div>
+              <label class="radio-opt" style="margin-bottom:10px;display:flex;align-items:center;gap:8px"><input type="radio" name="im-toggle" onclick="showIMModal()"> Enable</label>
+              <label class="radio-opt" style="margin-bottom:0;display:flex;align-items:center;gap:8px"><input type="radio" name="im-toggle"> Disable</label>
+            </div>
+            <button class="ds-save-btn-solid">Save all changes</button>
+          </div>
+        </div>
       </div>
     </div>
 
