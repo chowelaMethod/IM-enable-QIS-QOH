@@ -2113,105 +2113,108 @@ document.getElementById('overlayDim').hidden = true;
 
           <!-- Ground + road -->
           <rect x="0" y="140" width="500" height="2" rx="1" fill="#E5E7EB"/>
-          <line x1="238" y1="137" x2="320" y2="137" stroke="#D1D5DB" stroke-width="1.5" stroke-dasharray="6 4"/>
+          <line x1="236" y1="137" x2="318" y2="137" stroke="#D1D5DB" stroke-width="1.5" stroke-dasharray="6 4"/>
 
-          <!-- ══ Large parked truck (left) ══ -->
-          <!-- Trailer body -->
-          <rect x="4" y="72" width="188" height="64" rx="3" fill="#374151"/>
-          <rect x="4" y="72" width="188" height="7" rx="3" fill="#4B5563"/>
-          <rect x="4" y="130" width="188" height="6" rx="0" fill="#1F2937"/>
+          <!-- ══ Cab-over box truck (flat front, facing right, rear toward warehouse) ══ -->
+          <!-- Cargo box body -->
+          <rect x="50" y="70" width="172" height="68" rx="3" fill="#475569"/>
+          <rect x="50" y="70" width="172" height="8" rx="3" fill="#64748B"/>
+          <rect x="50" y="130" width="172" height="8" rx="1" fill="#1E293B"/>
+          <!-- Side panel stripe -->
+          <rect x="50" y="78" width="172" height="2" fill="#94A3B8" opacity="0.3"/>
           <!-- QB branding panel -->
-          <rect x="14" y="86" width="60" height="40" rx="3" fill="#DCFCE7" opacity="0.92"/>
-          <text x="44" y="106" font-size="9" font-weight="700" fill="#15803D" text-anchor="middle" font-family="-apple-system,sans-serif">QuickBooks</text>
-          <text x="44" y="118" font-size="7" fill="#166534" text-anchor="middle" font-family="-apple-system,sans-serif">Qty on Hand</text>
-          <!-- Trailer rear opening -->
-          <rect x="186" y="74" width="6" height="62" rx="1" fill="#111827"/>
-          <!-- Boxes waiting in trailer opening -->
-          <rect x="165" y="88"  width="18" height="15" rx="2" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.2"/>
-          <rect x="165" y="104" width="18" height="15" rx="2" fill="#BBF7D0" stroke="#16A34A" stroke-width="1.2"/>
-          <rect x="165" y="120" width="18" height="10" rx="2" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.2"/>
-          <!-- Cab -->
-          <rect x="190" y="82" width="50" height="54" rx="4" fill="#1F2937"/>
-          <!-- Windshield -->
-          <rect x="197" y="88" width="32" height="24" rx="3" fill="#93C5FD" fill-opacity="0.6"/>
-          <line x1="213" y1="88" x2="213" y2="112" stroke="#60A5FA" stroke-width="0.8" opacity="0.5"/>
-          <!-- Headlight -->
-          <rect x="234" y="115" width="7" height="6" rx="2" fill="#FEF9C3" opacity="0.9"/>
-          <!-- Exhaust stack -->
-          <rect x="191" y="62" width="5" height="20" rx="2" fill="#6B7280"/>
-          <rect x="191" y="60" width="9" height="5" rx="2" fill="#4B5563"/>
-          <!-- Trailer wheels (dual rear) -->
-          <circle cx="40"  cy="140" r="12" fill="#111827"/><circle cx="40"  cy="140" r="6" fill="#4B5563"/>
-          <circle cx="118" cy="140" r="12" fill="#111827"/><circle cx="118" cy="140" r="6" fill="#4B5563"/>
-          <circle cx="136" cy="140" r="12" fill="#111827"/><circle cx="136" cy="140" r="6" fill="#4B5563"/>
-          <!-- Cab front wheel -->
-          <circle cx="222" cy="140" r="12" fill="#111827"/><circle cx="222" cy="140" r="6" fill="#4B5563"/>
+          <rect x="62" y="84" width="70" height="42" rx="4" fill="#DCFCE7" opacity="0.95"/>
+          <text x="97" y="104" font-size="9.5" font-weight="700" fill="#15803D" text-anchor="middle" font-family="-apple-system,sans-serif">QuickBooks</text>
+          <text x="97" y="117" font-size="7.5" fill="#166534" text-anchor="middle" font-family="-apple-system,sans-serif">Qty on Hand</text>
+          <!-- Rear door frame -->
+          <rect x="214" y="72" width="8" height="66" rx="1" fill="#0F172A"/>
+          <!-- Boxes in rear opening -->
+          <rect x="194" y="84"  width="18" height="15" rx="2" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.2"/>
+          <rect x="194" y="100" width="18" height="15" rx="2" fill="#BBF7D0" stroke="#16A34A" stroke-width="1.2"/>
+          <rect x="194" y="116" width="18" height="12" rx="2" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.2"/>
+          <!-- Cab (flat-front, left of cargo) -->
+          <rect x="4" y="78" width="48" height="60" rx="5" fill="#1E293B"/>
+          <!-- Windshield (large, flat) -->
+          <rect x="10" y="83" width="34" height="28" rx="3" fill="#BAE6FD" fill-opacity="0.55"/>
+          <line x1="27" y1="83" x2="27" y2="111" stroke="#7DD3FC" stroke-width="0.8" opacity="0.6"/>
+          <!-- Side window -->
+          <rect x="10" y="114" width="14" height="10" rx="2" fill="#BAE6FD" fill-opacity="0.4"/>
+          <!-- Headlights (pair) -->
+          <rect x="4" y="119" width="10" height="5" rx="2" fill="#FEF9C3" opacity="0.95"/>
+          <!-- Bumper -->
+          <rect x="4" y="130" width="44" height="7" rx="2" fill="#334155"/>
+          <!-- Cab-to-cargo join -->
+          <rect x="50" y="70" width="3" height="68" fill="#0F172A"/>
+          <!-- Exhaust (top of cab) -->
+          <rect x="44" y="58" width="6" height="22" rx="3" fill="#64748B"/>
+          <rect x="42" y="56" width="10" height="5" rx="2" fill="#475569"/>
+          <!-- Wheels — front axle (cab) + dual rear (cargo) -->
+          <circle cx="26"  cy="140" r="13" fill="#0F172A"/><circle cx="26"  cy="140" r="6.5" fill="#334155"/>
+          <circle cx="145" cy="140" r="13" fill="#0F172A"/><circle cx="145" cy="140" r="6.5" fill="#334155"/>
+          <circle cx="163" cy="140" r="13" fill="#0F172A"/><circle cx="163" cy="140" r="6.5" fill="#334155"/>
+          <!-- Wheel hub bolts (front) -->
+          <circle cx="26" cy="134" r="1.5" fill="#64748B"/>
+          <circle cx="26" cy="146" r="1.5" fill="#64748B"/>
+          <circle cx="20" cy="140" r="1.5" fill="#64748B"/>
+          <circle cx="32" cy="140" r="1.5" fill="#64748B"/>
 
           <!-- ══ Method Warehouse (right) ══ -->
-          <polygon points="316,66 386,30 456,66" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.5"/>
-          <line x1="386" y1="30" x2="386" y2="66" stroke="#2563EB" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.5"/>
-          <rect x="316" y="65" width="140" height="75" fill="#DBEAFE" stroke="#2563EB" stroke-width="1.5"/>
+          <polygon points="318,65 388,28 458,65" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.5"/>
+          <line x1="388" y1="28" x2="388" y2="65" stroke="#2563EB" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.5"/>
+          <rect x="318" y="64" width="140" height="76" fill="#DBEAFE" stroke="#2563EB" stroke-width="1.5"/>
           <!-- Window right -->
-          <rect x="404" y="77" width="38" height="26" rx="2" fill="white" fill-opacity="0.9" stroke="#2563EB" stroke-width="1"/>
-          <line x1="423" y1="77" x2="423" y2="103" stroke="#2563EB" stroke-width="0.7" opacity="0.5"/>
-          <line x1="404" y1="90" x2="442" y2="90" stroke="#2563EB" stroke-width="0.7" opacity="0.5"/>
+          <rect x="406" y="76" width="38" height="26" rx="2" fill="white" fill-opacity="0.9" stroke="#2563EB" stroke-width="1"/>
+          <line x1="425" y1="76" x2="425" y2="102" stroke="#2563EB" stroke-width="0.7" opacity="0.5"/>
+          <line x1="406" y1="89" x2="444" y2="89" stroke="#2563EB" stroke-width="0.7" opacity="0.5"/>
           <!-- Door left (open, facing truck) -->
-          <rect x="322" y="93" width="30" height="47" rx="1" fill="#60A5FA" opacity="0.35" stroke="#2563EB" stroke-width="1"/>
-          <rect x="322" y="93" width="14" height="47" rx="1" fill="#93C5FD" opacity="0.6"/>
-          <rect x="323" y="94" width="13" height="45" fill="#DBEAFE"/>
+          <rect x="324" y="92" width="30" height="48" rx="1" fill="#60A5FA" opacity="0.35" stroke="#2563EB" stroke-width="1"/>
+          <rect x="324" y="92" width="14" height="48" rx="1" fill="#93C5FD" opacity="0.6"/>
+          <rect x="325" y="93" width="13" height="46" fill="#DBEAFE"/>
           <!-- Method labels -->
-          <text x="386" y="119" font-size="8.5" font-weight="700" fill="#1D4ED8" text-anchor="middle" font-family="-apple-system,sans-serif">Method</text>
-          <text x="386" y="130" font-size="7" fill="#1E40AF" text-anchor="middle" font-family="-apple-system,sans-serif">Qty in Stock</text>
-          <!-- Boxes already delivered (stacked inside right wall) -->
-          <rect x="458" y="118" width="14" height="14" rx="2" fill="#DBEAFE" stroke="#2563EB" stroke-width="1.2"/>
-          <rect x="458" y="103" width="14" height="14" rx="2" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.2"/>
-          <rect x="458" y="88"  width="14" height="14" rx="2" fill="#DBEAFE" stroke="#2563EB" stroke-width="1.2"/>
+          <text x="388" y="118" font-size="8.5" font-weight="700" fill="#1D4ED8" text-anchor="middle" font-family="-apple-system,sans-serif">Method</text>
+          <text x="388" y="129" font-size="7" fill="#1E40AF" text-anchor="middle" font-family="-apple-system,sans-serif">Qty in Stock</text>
+          <!-- Boxes already inside warehouse (right wall) -->
+          <rect x="460" y="118" width="14" height="14" rx="2" fill="#DBEAFE" stroke="#2563EB" stroke-width="1.2"/>
+          <rect x="460" y="103" width="14" height="14" rx="2" fill="#BFDBFE" stroke="#2563EB" stroke-width="1.2"/>
+          <rect x="460" y="88"  width="14" height="14" rx="2" fill="#DBEAFE" stroke="#2563EB" stroke-width="1.2"/>
 
-          <!-- ══ Forklift A (0s start) — cycles truck → warehouse, 5s loop ══ -->
+          <!-- ══ Forklift A (0s) — truck rear → warehouse door, 5s loop ══ -->
           <g>
-            <!-- Box on forks: visible outbound, fades at warehouse door -->
-            <rect x="28" y="98" width="17" height="14" rx="2" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.1">
-              <animate attributeName="opacity"
-                values="1;1;1;0;0;0;1;1"
+            <rect x="28" y="97" width="17" height="14" rx="2" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.1">
+              <animate attributeName="opacity" values="1;1;1;0;0;0;1;1"
                 keyTimes="0;0.05;0.46;0.52;0.68;0.74;0.82;1"
                 dur="5s" begin="0s" repeatCount="indefinite"/>
             </rect>
-            <!-- Body -->
-            <rect x="0" y="110" width="26" height="28" rx="2" fill="#374151"/>
-            <rect x="4" y="113" width="14" height="11" rx="1" fill="#93C5FD" fill-opacity="0.55"/>
-            <!-- Mast -->
-            <rect x="26" y="96" width="4" height="42" rx="1" fill="#6B7280"/>
-            <!-- Forks -->
-            <rect x="30" y="114" width="18" height="3" rx="1" fill="#9CA3AF"/>
-            <rect x="30" y="119" width="18" height="3" rx="1" fill="#9CA3AF"/>
-            <!-- Wheels -->
+            <rect x="0" y="109" width="26" height="29" rx="2" fill="#374151"/>
+            <rect x="4" y="112" width="14" height="11" rx="1" fill="#93C5FD" fill-opacity="0.55"/>
+            <rect x="26" y="95" width="4" height="43" rx="1" fill="#6B7280"/>
+            <rect x="30" y="113" width="18" height="3" rx="1" fill="#9CA3AF"/>
+            <rect x="30" y="118" width="18" height="3" rx="1" fill="#9CA3AF"/>
             <circle cx="8"  cy="138" r="7" fill="#1F2937"/><circle cx="8"  cy="138" r="3.5" fill="#6B7280"/>
             <circle cx="28" cy="138" r="7" fill="#1F2937"/><circle cx="28" cy="138" r="3.5" fill="#6B7280"/>
-            <!-- Translate: home=152 (forks at ~x=182, truck opening), away=284 (forks at ~x=314, warehouse door) -->
             <animateTransform attributeName="transform" type="translate"
-              values="152,0; 152,0; 284,0; 284,0; 152,0; 152,0"
+              values="158,0; 158,0; 284,0; 284,0; 158,0; 158,0"
               keyTimes="0; 0.08; 0.46; 0.58; 0.90; 1"
               calcMode="spline" keySplines="0 0 1 1; 0.35 0 0.25 1; 0 0 1 1; 0.35 0 0.25 1; 0 0 1 1"
               dur="5s" begin="0s" repeatCount="indefinite"/>
           </g>
 
-          <!-- ══ Forklift B (2.5s offset — keeps road busy) ══ -->
+          <!-- ══ Forklift B (2.5s offset) ══ -->
           <g opacity="0">
-            <rect x="28" y="98" width="17" height="14" rx="2" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.1">
-              <animate attributeName="opacity"
-                values="1;1;1;0;0;0;1;1"
+            <rect x="28" y="97" width="17" height="14" rx="2" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.1">
+              <animate attributeName="opacity" values="1;1;1;0;0;0;1;1"
                 keyTimes="0;0.05;0.46;0.52;0.68;0.74;0.82;1"
                 dur="5s" begin="2.5s" repeatCount="indefinite"/>
             </rect>
-            <rect x="0" y="110" width="26" height="28" rx="2" fill="#374151"/>
-            <rect x="4" y="113" width="14" height="11" rx="1" fill="#93C5FD" fill-opacity="0.55"/>
-            <rect x="26" y="96" width="4" height="42" rx="1" fill="#6B7280"/>
-            <rect x="30" y="114" width="18" height="3" rx="1" fill="#9CA3AF"/>
-            <rect x="30" y="119" width="18" height="3" rx="1" fill="#9CA3AF"/>
+            <rect x="0" y="109" width="26" height="29" rx="2" fill="#374151"/>
+            <rect x="4" y="112" width="14" height="11" rx="1" fill="#93C5FD" fill-opacity="0.55"/>
+            <rect x="26" y="95" width="4" height="43" rx="1" fill="#6B7280"/>
+            <rect x="30" y="113" width="18" height="3" rx="1" fill="#9CA3AF"/>
+            <rect x="30" y="118" width="18" height="3" rx="1" fill="#9CA3AF"/>
             <circle cx="8"  cy="138" r="7" fill="#1F2937"/><circle cx="8"  cy="138" r="3.5" fill="#6B7280"/>
             <circle cx="28" cy="138" r="7" fill="#1F2937"/><circle cx="28" cy="138" r="3.5" fill="#6B7280"/>
             <animateTransform attributeName="transform" type="translate"
-              values="152,0; 152,0; 284,0; 284,0; 152,0; 152,0"
+              values="158,0; 158,0; 284,0; 284,0; 158,0; 158,0"
               keyTimes="0; 0.08; 0.46; 0.58; 0.90; 1"
               calcMode="spline" keySplines="0 0 1 1; 0.35 0 0.25 1; 0 0 1 1; 0.35 0 0.25 1; 0 0 1 1"
               dur="5s" begin="2.5s" repeatCount="indefinite"/>
