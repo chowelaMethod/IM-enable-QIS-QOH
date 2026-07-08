@@ -1472,6 +1472,36 @@ function showSyncToast() {
 function refreshItemsData() {
   var t = document.getElementById('syncToast');
   if (t) t.classList.remove('toast-visible');
+
+  var rows = [
+    ['Copper Pipe 1/2"',       'Inventory Part', 'CPP-0500', 142, 142, 12,  8,  122],
+    ['Copper Pipe 3/4"',       'Inventory Part', 'CPP-0750',  88,  88,  4,  0,   84],
+    ['PVC Elbow 90° 1"',       'Inventory Part', 'PVC-E901',  310, 310, 22,  40, 328],
+    ['Gate Valve 1/2"',        'Inventory Part', 'GTV-0500',  55,  55,  6,  10,  59],
+    ['Ball Valve 3/4"',        'Inventory Part', 'BLV-0750',  74,  74,  8,   5,  71],
+    ['Teflon Tape 1/2"',       'Inventory Part', 'TFT-0500', 200, 200,  0,  50, 250],
+    ['Solder Wire 1lb',        'Inventory Part', 'SLD-1LB',   36,  36,  2,   0,  34],
+    ['Pipe Wrench 14"',        'Inventory Part', 'PWR-1400',  18,  18,  1,   0,  17],
+    ['Compression Fitting 3/4"','Inventory Part','CMF-0750',  96,  96, 10,  20, 106],
+    ['P-Trap 1.5"',            'Inventory Part', 'PTR-1500',  47,  47,  3,   0,  44],
+  ];
+
+  var tbody = document.getElementById('aiItemsTbody2');
+  if (!tbody) return;
+  tbody.innerHTML = rows.map(function(r) {
+    return '<tr>'
+      + '<td><input type="checkbox" style="accent-color:#2563EB"></td>'
+      + '<td style="color:#2563EB;font-weight:500;cursor:pointer">' + r[0] + '</td>'
+      + '<td style="color:#6B7280">' + r[1] + '</td>'
+      + '<td style="color:#6B7280">' + r[2] + '</td>'
+      + '<td class="num">' + r[3] + '</td>'
+      + '<td class="num" style="color:#0F1B31;font-weight:500">' + r[4] + '</td>'
+      + '<td class="num">' + r[5] + '</td>'
+      + '<td class="num">' + r[6] + '</td>'
+      + '<td class="num">' + r[7] + '</td>'
+      + '</tr>';
+  }).join('');
+
   var page = document.getElementById('addItemsPage');
   if (page) page.scrollTop = 0;
 }
