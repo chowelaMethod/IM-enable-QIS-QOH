@@ -740,10 +740,13 @@ body {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: white;
+  background: #F9FAFB;
 }
-.im-import-option:hover { border-color: #93C5FD; }
-.im-import-option.selected { border-color: #2563EB; background: #EFF6FF; }
+.im-import-option:hover:not(.selected) { border-color: #93C5FD; }
+.im-import-option.selected { border: 2px solid #2563EB; background: white; }
+.im-import-option:not(.selected) .im-import-option-body strong { color: #9CA3AF; }
+.im-import-option:not(.selected) .im-import-option-body span { color: #C4C9D4; }
+.im-import-option:not(.selected) .im-field-map { opacity: 0.35; }
 .im-import-option input[type="radio"] { display: none; }
 .im-radio-circle {
   width: 20px;
@@ -770,7 +773,7 @@ body {
   background: white;
 }
 .im-import-option-body { flex: 1; min-width: 0; }
-.im-import-option-body strong { display: block; font-size: 14.5px; font-weight: 700; color: #0F1B31; margin-bottom: 4px; }
+.im-import-option-body strong { display: block; font-size: 13.5px; font-weight: 700; color: #0F1B31; margin-bottom: 3px; }
 .im-import-option-body span { font-size: 12.5px; color: #6B7280; line-height: 1.5; }
 .im-field-map {
   background: #F9FAFB;
@@ -1929,14 +1932,23 @@ document.getElementById('overlayDim').hidden = true;
 
       <!-- Step 2: QuickBooks import -->
       <div class="im-step-panel" id="imStep2">
-        <p id="imStep2Intro" style="font-size:13px;color:#6B7280;line-height:1.5;margin-bottom:16px">Would you like to import your existing inventory quantities to seed your starting stock levels in Method?</p>
+        <p id="imStep2Intro" style="display:none"></p>
+
+        <!-- Info banner — always visible -->
+        <div style="display:flex;align-items:flex-start;gap:10px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:12px 14px;margin-bottom:14px">
+          <div style="width:20px;height:20px;border-radius:50%;background:#1E3A5F;color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px;font-style:italic;font-family:Georgia,serif">i</div>
+          <div>
+            <p style="margin:0 0 3px;font-size:13px;font-weight:700;color:#1E3A5F;line-height:1.3">Import existing inventory QTY</p>
+            <p style="margin:0;font-size:12px;color:#374151;line-height:1.5">Quantities will be assigned to your <strong>default warehouse location</strong>. To reassign items to different locations or add new locations, go to <strong>Items</strong>.</p>
+          </div>
+        </div>
 
         <label class="im-import-option selected" id="importOptYes" onclick="selectImportOpt('yes')">
-          <div class="im-radio-circle"></div>
           <div class="im-import-option-body">
             <input type="radio" name="qb-import" value="yes" checked>
-            <strong>Yes — import from QuickBooks</strong>
-            <span style="display:block;margin-bottom:10px">Your current QuickBooks inventory quantities will be pulled in as starting stock levels. The following fields will be mapped:</span>
+            <strong>Import from QuickBooks</strong>
+            <span style="display:block;margin-bottom:8px">Your current QuickBooks inventory quantities will be pulled in as starting stock levels. Imported quantities are recorded as stock adjustments.</span>
+            <span style="display:block;margin-bottom:6px">The following fields will be mapped:</span>
             <div class="im-field-map">
               <div class="im-field-map-row">
                 <span class="im-field-pill fp-qb">Quantity on Hand (QOH)</span>
@@ -1944,21 +1956,17 @@ document.getElementById('overlayDim').hidden = true;
                 <span class="im-field-pill fp-method">Quantity in Stock (QIS)</span>
               </div>
             </div>
-            <div style="display:flex;align-items:flex-start;gap:8px;background:white;border:1px solid #BFDBFE;border-radius:6px;padding:8px 10px;margin-top:10px">
-              <div style="width:16px;height:16px;border-radius:50%;background:#2563EB;color:white;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;margin-top:1px;font-style:italic;font-family:Georgia,serif">i</div>
-              <p style="margin:0;font-size:11.5px;color:#374151;line-height:1.5">Quantities will be assigned to your <strong>default warehouse location</strong>. To reassign items or add locations, go to <strong>Items</strong>.</p>
-            </div>
-            <span style="font-size:11px;color:#9CA3AF;display:block;margin-top:8px">Imported quantities are recorded as stock adjustments.</span>
           </div>
+          <div class="im-radio-circle" style="flex-shrink:0;margin-top:2px"></div>
         </label>
 
         <label class="im-import-option" id="importOptNo" onclick="selectImportOpt('no')">
-          <div class="im-radio-circle"></div>
           <div class="im-import-option-body">
             <input type="radio" name="qb-import" value="no">
-            <strong>No — I'll enter quantities manually</strong>
+            <strong>Enter QTY manually</strong>
             <span>All items will start with 0 in stock. Use stock adjustments to set opening quantities at your own pace.</span>
           </div>
+          <div class="im-radio-circle" style="flex-shrink:0;margin-top:2px"></div>
         </label>
 
       </div>
