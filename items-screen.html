@@ -1469,6 +1469,12 @@ function showSyncToast() {
   if (!t) return;
   t.classList.add('toast-visible');
 }
+function refreshItemsData() {
+  var t = document.getElementById('syncToast');
+  if (t) t.classList.remove('toast-visible');
+  var page = document.getElementById('addItemsPage');
+  if (page) page.scrollTop = 0;
+}
 function confirmEnableIM() {
   document.getElementById('enableIMOverlay').classList.remove('visible');
 }
