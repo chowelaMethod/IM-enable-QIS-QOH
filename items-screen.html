@@ -2209,8 +2209,10 @@ function setIMStep(n) {
 function imEnableOrNext() {
   var noSelected = document.getElementById('importOptNo').classList.contains('selected');
   if (noSelected) {
+    manualEntryFlow = true;
     confirmEnableIM();
   } else {
+    manualEntryFlow = false;
     setIMStep(3);
   }
 }
@@ -2226,18 +2228,29 @@ function confirmEnableIM() {
   imDisabled = false;
   setIMEnabledDate();
   updateIMToggles();
-  var notifyChecked = document.getElementById('notifyWhenDone').checked;
   document.getElementById('imModalOverlay').classList.remove('visible');
   document.getElementById('addItemsPage').classList.add('visible');
-  if (!notifyChecked) return;
-  if (syncComplete) {
-    setTimeout(showSyncToast, 400);
+  var banner = document.getElementById('itemsOpt2Banner');
+  var emptyState = document.getElementById('itemsEmptyState');
+  var tbody = document.getElementById('aiItemsTbody2');
+  if (manualEntryFlow) {
+    if (banner) banner.style.display = 'none';
+    if (emptyState) emptyState.style.display = '';
+    if (tbody) tbody.style.display = 'none';
   } else {
-    toastPending = true;
+    if (banner) banner.style.display = '';
+    if (emptyState) emptyState.style.display = 'none';
+    if (tbody) tbody.style.display = '';
+    if (syncComplete) {
+      setTimeout(showSyncToast, 400);
+    } else {
+      toastPending = true;
+    }
   }
 }
 var imDisabled = false;
 var isReenableFlow = false;
+var manualEntryFlow = false;
 var imEnabledDate = null;
 
 function setIMEnabledDate() {
@@ -2478,6 +2491,11 @@ function backFromAddItems() {
           <tr class="ai-empty-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
         </tbody>
       </table>
+    </div>
+    <div id="itemsEmptyState" style="display:none;padding:64px 0;text-align:center;border-top:1px solid #E5E7EB;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style="color:#D1D5DB;margin-bottom:16px"><path d="M4 4h10l6 6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 4v6h6M8 14h8M8 18h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <p style="font-size:15px;font-weight:700;color:#111827;margin:0 0 6px">No items yet</p>
+      <p style="font-size:13.5px;color:#6B7280;margin:0">Click <strong>+ New Item</strong> to add your first inventory item.</p>
     </div>
     </div><!-- /itemsOpt2 -->
 
