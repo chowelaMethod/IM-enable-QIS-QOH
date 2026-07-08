@@ -2013,7 +2013,7 @@ document.getElementById('overlayDim').hidden = true;
       <div class="im-step-panel" id="imStep3" style="text-align:center;padding:8px 0 4px">
 
         <!-- Two-warehouse illustration -->
-        <svg viewBox="0 0 500 162" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;margin:0 auto 8px;display:block">
+        <svg id="step3Svg" viewBox="0 0 500 162" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;margin:0 auto 8px;display:block">
           <defs>
             <path id="arcPath" d="M 139,106 C 200,28 300,28 361,106"/>
           </defs>
@@ -2241,6 +2241,13 @@ function setIMStep(n) {
     document.getElementById('imDoneBtn').style.display = '';
     document.getElementById('imBackBtn').style.display = 'none';
     document.getElementById('imCancelBtn').style.display = 'none';
+    // Restart SVG SMIL animations — they freeze while the panel is display:none
+    var svg = document.getElementById('step3Svg');
+    if (svg) {
+      svg.querySelectorAll('animate, animateTransform').forEach(function(el) {
+        el.beginElement();
+      });
+    }
     startSyncTimer();
     updateDoneBtn();
   }
