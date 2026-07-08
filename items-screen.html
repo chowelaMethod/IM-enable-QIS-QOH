@@ -1973,9 +1973,9 @@ document.getElementById('overlayDim').hidden = true;
         <p id="imStep2Intro" style="display:none"></p>
 
         <!-- Info banner — always visible -->
-        <div style="display:flex;align-items:flex-start;gap:14px;background:#EEF3FB;border-radius:10px;padding:16px 18px;margin-bottom:14px">
+        <div id="imStep2Banner" style="display:flex;align-items:flex-start;gap:14px;background:#EEF3FB;border-radius:10px;padding:16px 18px;margin-bottom:14px">
           <div style="width:24px;height:24px;border-radius:50%;background:#1E3A5F;color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px;font-style:italic;font-family:Georgia,serif">i</div>
-          <div>
+          <div id="imStep2BannerBody">
             <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#1E3A5F;line-height:1.3">Import existing inventory QTY</p>
             <p style="margin:0;font-size:13px;color:#374151;line-height:1.6">Quantities will be assigned to your <strong>default warehouse location</strong>. To reassign items to different locations or add new locations, go to <strong style="color:#2563EB">Items.</strong></p>
           </div>
@@ -2216,14 +2216,21 @@ function setIMStep(n) {
     document.getElementById('imCancelBtn').style.display = '';
   } else if (n === 2) {
     document.getElementById('imModalTitle').textContent = isReenableFlow ? 'Re-enable Inventory Management (IM)' : 'Enable Inventory Management (IM)';
-    document.getElementById('imStep2Intro').textContent = isReenableFlow
-      ? 'We\'ll only import changes made to your inventory in QuickBooks while Inventory Management was disabled — not everything again.'
-      : 'Would you like to import your existing inventory quantities to seed your starting stock levels in Method?';
+    // Swap banner copy for re-enable vs enable
+    var bannerBody = document.getElementById('imStep2BannerBody');
+    if (bannerBody) {
+      if (isReenableFlow) {
+        bannerBody.innerHTML = '<p style="margin:0;font-size:13px;color:#374151;line-height:1.6">We\'ll import any changes you made to your inventory in QuickBooks while IM was disabled. Quantities will be assigned to your <strong>default warehouse</strong>.</p>';
+      } else {
+        bannerBody.innerHTML = '<p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#1E3A5F;line-height:1.3">Import existing inventory QTY</p><p style="margin:0;font-size:13px;color:#374151;line-height:1.6">Quantities will be assigned to your <strong>default warehouse location</strong>. To reassign items to different locations or add new locations, go to <strong style="color:#2563EB">Items.</strong></p>';
+      }
+    }
     document.getElementById('imNextBtn').style.display = 'none';
     document.getElementById('imEnableBtn').style.display = '';
     document.getElementById('imDoneBtn').style.display = 'none';
-    document.getElementById('imBackBtn').style.display = '';
-    document.getElementById('imCancelBtn').style.display = 'none';
+    // Re-enable flow has no step 1 to go back to — show Cancel instead of Back
+    document.getElementById('imBackBtn').style.display = isReenableFlow ? 'none' : '';
+    document.getElementById('imCancelBtn').style.display = isReenableFlow ? '' : 'none';
   } else {
     document.getElementById('imModalTitle').textContent = isReenableFlow ? 'Re-enable Inventory Management (IM)' : 'Enable Inventory Management (IM)';
     var qbW = document.getElementById('qbWarehouse');
@@ -2373,13 +2380,9 @@ function saveIMChanges() {
 }
 function confirmReenableIM() {
   isReenableFlow = true;
-  // Save original content once, then swap to re-enable text
-  var el = document.getElementById('imStep1Content');
-  if (!STEP1_ENABLE_HTML) STEP1_ENABLE_HTML = el.innerHTML;
-  el.innerHTML = STEP1_REENABLE_HTML;
-  document.getElementById('imUnderstand').checked = false;
-  document.getElementById('imNextBtn').disabled = true;
-  setIMStep(1);
+  // Reset import option to default (QB import selected)
+  selectImportOpt('yes');
+  setIMStep(2);
   document.getElementById('imModalOverlay').classList.add('visible');
 }
 function backFromAddItems() {
