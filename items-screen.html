@@ -2228,9 +2228,8 @@ function setIMStep(n) {
     document.getElementById('imNextBtn').style.display = 'none';
     document.getElementById('imEnableBtn').style.display = '';
     document.getElementById('imDoneBtn').style.display = 'none';
-    // Re-enable flow has no step 1 to go back to — show Cancel instead of Back
-    document.getElementById('imBackBtn').style.display = isReenableFlow ? 'none' : '';
-    document.getElementById('imCancelBtn').style.display = isReenableFlow ? '' : 'none';
+    document.getElementById('imBackBtn').style.display = '';
+    document.getElementById('imCancelBtn').style.display = 'none';
   } else {
     document.getElementById('imModalTitle').textContent = isReenableFlow ? 'Re-enable Inventory Management (IM)' : 'Enable Inventory Management (IM)';
     var qbW = document.getElementById('qbWarehouse');
@@ -2380,9 +2379,13 @@ function saveIMChanges() {
 }
 function confirmReenableIM() {
   isReenableFlow = true;
-  // Reset import option to default (QB import selected)
+  var el = document.getElementById('imStep1Content');
+  if (!STEP1_ENABLE_HTML) STEP1_ENABLE_HTML = el.innerHTML;
+  el.innerHTML = STEP1_REENABLE_HTML;
+  document.getElementById('imUnderstand').checked = false;
+  document.getElementById('imNextBtn').disabled = true;
   selectImportOpt('yes');
-  setIMStep(2);
+  setIMStep(1);
   document.getElementById('imModalOverlay').classList.add('visible');
 }
 function backFromAddItems() {
