@@ -2190,8 +2190,10 @@ function setIMStep(n) {
     document.getElementById('imCancelBtn').style.display = 'none';
   } else {
     document.getElementById('imModalTitle').textContent = isReenableFlow ? 'Re-enable Inventory Management (IM)' : 'Enable Inventory Management (IM)';
-    document.getElementById('qbWarehouse').style.display = isReenableFlow ? 'none' : '';
-    document.getElementById('qbTruck').style.display     = isReenableFlow ? '' : 'none';
+    var qbW = document.getElementById('qbWarehouse');
+    var qbT = document.getElementById('qbTruck');
+    if (qbW) qbW.style.display = isReenableFlow ? 'none' : '';
+    if (qbT) qbT.style.display = isReenableFlow ? '' : 'none';
     document.getElementById('imNextBtn').style.display = 'none';
     document.getElementById('imEnableBtn').style.display = 'none';
     document.getElementById('imDoneBtn').style.display = '';
