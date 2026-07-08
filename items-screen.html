@@ -1458,19 +1458,16 @@ function startSyncTimer() {
 }
 
 function updateDoneBtn() {
-  var checked = document.getElementById('notifyWhenDone').checked;
   var btn = document.getElementById('imDoneBtn');
-  btn.textContent = 'Done';
-  btn.style.background = '#2563EB';
-  var enabled = checked || syncComplete;
-  btn.disabled = !enabled;
-  btn.style.opacity = enabled ? '1' : '0.45';
-  btn.style.cursor = enabled ? 'pointer' : 'not-allowed';
+  if (!btn) return;
+  btn.disabled = false;
+  btn.style.opacity = '1';
+  btn.style.cursor = 'pointer';
 }
 function showSyncToast() {
   var t = document.getElementById('syncToast');
-  t.classList.add('visible');
-  setTimeout(function() { t.classList.remove('visible'); }, 6000);
+  if (!t) return;
+  t.classList.add('toast-visible');
 }
 function confirmEnableIM() {
   document.getElementById('enableIMOverlay').classList.remove('visible');
